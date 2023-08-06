@@ -64,6 +64,7 @@
     "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
   },
   "ignore": [
-    "node_modules"
+    "node_modules",
+    "dist"
   ]
 }
