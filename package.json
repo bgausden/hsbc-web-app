@@ -3,13 +3,31 @@
   "version": "1.0.0",
   "description": "Simple one-page app to convert downloaded HSBC-format CSV credit card info to Xero format CSV",
   "type": "module",
-  "main": "index.js",
+  "main": "src/index.ts",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "develop": "webpack-dev-server --mode development",
+    "build": "webpack --mode production"
   },
   "author": "barry@lissome.hk",
   "license": "ISC",
   "dependencies": {
-    "csv-parse": "^5.4.0"
+    "csv-parse": "^5.4.0",
+    "office-ui-fabric-core": "^11.1.0",
+    "office-ui-fabric-js": "^1.5.0"
+  },
+  "devDependencies": {
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "html-loader": "^4.2.0",
+    "html-webpack-plugin": "^5.5.3",
+    "process": "^0.11.10",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.1.6",
+    "url": "^0.11.1",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
   }
 }

@@ -1,5 +1,4 @@
-import { CastingContext } from "csv-parse"
-import { parse } from "csv-parse/browser/esm/sync"
+import { parse, CastingContext } from 'csv-parse/browser/esm/sync'
 
 const PAYMENT = /PAYMENT - THANK YOU.*$/
 const RETURN = /RETURN:.*$/
@@ -48,18 +47,7 @@ const onRecord = (
     // Purchase amounts need to be negative for Xero import
     // Payments and rerurns are positive amounts (credits) in Xero
     // HSBC CSV has everything as a positive value
-    if (
-        record[DESCRIPTION_INDEX].match(PAYMENT) ||
-        record[DESCRIPTION_INDEX].match(RETURN)
-    ) {
-        // do nothing. The amount is already positive
-        console.log("Leave value positive", record[DESCRIPTION_INDEX])
-    } else {
-        // change the value to a negative value
-        record[AMOUNT_INDEX] = (
-            Number(record[AMOUNT_INDEX]) * -1
-        ).toString()
-    }
+    setSign(record)
 
     // delete rows where there is only data in the 0th column (garbage)
     if (record[TRANSACTION_DATE_INDEX].trim() === "") return null
@@ -68,23 +56,33 @@ const onRecord = (
     return [record[0], record[4], "", `${record[2]} ${record[3]}`]
 }
 
-export const csvOnload = (
-    reader: FileReader,
-) => {
-    return async (): Promise<void> => {
-        // get the raw data, skipping the header
-        const raw = reader.result as string
-        const rawData = raw.slice(raw.indexOf(`\n`) + 1)
-        // parse the raw data into a 2d array of strings
-        const data: string[][] = parse(rawData, {
-            relax_column_count: true,
-            trim: true,
-            raw: true,
-            cast: cast,
-            onRecord: onRecord,
-        })
-        // replace the header
-        data[0] = ["Date", "Amount", "Payee", "Description"]
-        // populate the worksheet
+function setSign(record: string[]) {
+    if (record[DESCRIPTION_INDEX].match(PAYMENT) ||
+        record[DESCRIPTION_INDEX].match(RETURN)) {
+        // do nothing. The amount is already positive
+        return
     }
+
+    // change the value to a negative value
+    record[AMOUNT_INDEX] = `-${record[AMOUNT_INDEX]}`
+}
+
+export function csvParse(
+    fileContents: string,
+    csvData: string[][]
+) {
+    // get the raw data, skipping the header
+    const raw = fileContents
+    const rawData = raw.slice(raw.indexOf(`\n`) + 1)
+    // parse the raw data into a 2d array of strings
+    csvData = parse(rawData, {
+        relax_column_count: true,
+        trim: true,
+        raw: true,
+        cast: cast,
+        onRecord: onRecord,
+    })
+    // replace the header
+    csvData[0] = ["Date", "Amount", "Payee", "Description"]
+    return csvData
 }

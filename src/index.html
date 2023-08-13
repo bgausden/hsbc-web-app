@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<script src="./index.js"></script>
-
 <head>
     <meta charset="UTF-8">
     <title>HSBC Xero Processor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+        href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.6.1/css/fabric.min.css">
+<!--         <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.5.0/css/fabric.min.css">
+        <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.5.0/css/fabric.components.min.css">
+        <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.5.0/js/fabric.min.js"></script> -->
 </head>
 
-<body>
-    <h1>File Processor</h1>
+<body class="ms-Fabric">
+    <h2>HSBC CC Statement Processor</h2>
     <form>
         <label>
             Select a file to upload:
@@ -18,37 +21,6 @@
         </label>
         <button type="submit">Process file</button>
     </form>
-    <script>
-        // Get the file input element from the HTML document
-        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-
-        // Listen for the form submission event
-        document.querySelector('form').addEventListener('submit', async (event) => {
-            // Prevent the default form submission behavior
-            event.preventDefault();
-
-            // Get the uploaded file
-            const file = fileInput.files[0];
-
-            // Read the contents of the file
-            const fileContents = await file.text();
-
-            // Process the file contents as needed
-            const processedContents = fileContents.toUpperCase();
-
-            // Create a new file with the processed contents
-            const processedFile = new File([processedContents], 'processed.txt', {type: 'text/plain'});
-
-            // Create a download link for the processed file
-            const downloadLink = document.createElement('a');
-            downloadLink.href = URL.createObjectURL(processedFile);
-            downloadLink.download = processedFile.name;
-            downloadLink.textContent = 'Download processed file';
-
-            // Append the download link to the HTML document
-            document.body.appendChild(downloadLink);
-        });
-    </script>
 </body>
 
 </html>
