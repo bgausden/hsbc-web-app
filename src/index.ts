@@ -1,5 +1,4 @@
-import { csvParse } from "./csv-functions";
-import { instantiateTables } from "./fabric-functions";
+import { csvParse } from "./csv-functions.js";
 
 function isForm(element: unknown): asserts element is HTMLFormElement {
   if (!(element instanceof HTMLFormElement)) {
@@ -69,7 +68,7 @@ export function main() {
     const table = document.body.appendChild(document.createElement('table'))
     assertNotNull(table)
     table.id = 'sample-data'
-    table.className = 'ms-Table'
+    table.className = 'table'
     table.appendChild(document.createElement('thead'));
     table.appendChild(document.createElement('tr'));
 
@@ -84,7 +83,6 @@ export function main() {
     for (let i = 1; i < 20 && i < csvData.length; i++) {
       const row = csvData[i];
       const rowElement = document.createElement('tr');
-      rowElement.className = 'ms-Table-row'
       for (const column of row) {
         const cell = document.createElement('td');
         cell.textContent = column;
@@ -92,8 +90,6 @@ export function main() {
       }
       table.appendChild(rowElement);
     }
-
-    instantiateTables()
 
     document.body.appendChild(document.createElement('br'));
 

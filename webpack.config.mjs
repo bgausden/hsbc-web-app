@@ -30,12 +30,16 @@ export default async (env, options) => {
           test: /\.([cm]?ts|tsx)$/,
           exclude: [/node_modules/],
           use: "ts-loader"
-        }/* ,
+        },
+        {
+          test: /\.css/,
+          type: 'asset/resource'
+        },
         {
           test: /\.html$/,
           exclude: /node_modules/,
           use: "html-loader"
-        },
+        },/*
         {
           test: /\.(png|jpg|jpeg|gif|svg)$/,
           type: 'asset/resource',
