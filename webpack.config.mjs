@@ -32,18 +32,14 @@ export default async (env, options) => {
           use: "ts-loader"
         },
         {
-          test: /\.css/,
-          type: 'asset/resource'
-        },
-        {
           test: /\.html$/,
           exclude: /node_modules/,
           use: "html-loader"
-        },/*
+        },
         {
-          test: /\.(png|jpg|jpeg|gif|svg)$/,
-          type: 'asset/resource',
-        }, */
+          test: /\.(css|svg|jpg|jpeg|gif|png)$/,
+          type: 'asset/resource'
+        }
       ]
     },
     plugins: [

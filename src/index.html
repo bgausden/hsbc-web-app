@@ -2,22 +2,37 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>HSBC Xero Processor</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <title>HSBC Xero Processor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
 </head>
 
-<body >
-    <h2>HSBC CC Statement Processor</h2>
-    <form>
-        <label>
-            Select a file to upload:
-            <input type="file">
-        </label>
-        <button type="submit">Process file</button>
-    </form>
-    <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+<body>
+  <div class="container-fluid" id="top-container">
+    <main role="main">
+      <h2>HSBC CC Statement Processor</h2>
+      <div class="mb-3"></div>
+      <form id="fileSelect" class="bg-light">
+        <div class="mb-3">
+          <label for="formFile" class="form-label h5">Select HSBC CC Statement</label>
+          <input class="form-control" type="file" id="formFile">
+        </div>
+        <div class="mb-3">
+          <input class="btn btn-primary" type="submit" value="Process File">
+        </div>
+      </form>
+    </main>
+  </div>
+  <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
+
+<!--     <form>
+            <label>
+                Select a file to upload:
+                <input type="file">
+            </label>
+            <button type="submit">Process file</button>
+        </form> -->

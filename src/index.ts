@@ -23,7 +23,7 @@ export function main() {
   const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
 
   // Listen for the form submission event
-  const possibleForm = document.querySelector('form');
+  const possibleForm = document.querySelector('#fileSelect');
   isForm(possibleForm)
   possibleForm.addEventListener('submit', async (event) => {
     // Prevent the default form submission behavior
@@ -57,18 +57,25 @@ export function main() {
     downloadLink.download = processedFile.name;
     downloadLink.textContent = 'Download processed file';
 
-    document.body.appendChild(document.createElement('br'));
+    const topContainer = document.querySelector('#top-container')
+    assertNotNull(topContainer)
 
+    topContainer.appendChild(document.createElement('div')).className="mb-3"
+
+    const sampleDataDiv = topContainer.appendChild(document.createElement('div'))
+    sampleDataDiv.id = 'sample-data-div'
+    sampleDataDiv.className = 'mb-3'
+    
     // Create a heading for the sample data
-    const sampleDataHeading = document.createElement('h2');
+    const sampleDataHeading = document.createElement('h5');
     sampleDataHeading.textContent = 'Sample data';
-    document.body.appendChild(sampleDataHeading);
+    sampleDataDiv.appendChild(sampleDataHeading);
 
     // Create a table to display a sample of the data
-    const table = document.body.appendChild(document.createElement('table'))
+    const table = sampleDataDiv.appendChild(document.createElement('table'))
     assertNotNull(table)
     table.id = 'sample-data'
-    table.className = 'table'
+    table.className = 'table.mb-3'
     table.appendChild(document.createElement('thead'));
     table.appendChild(document.createElement('tr'));
 
@@ -91,25 +98,25 @@ export function main() {
       table.appendChild(rowElement);
     }
 
-    document.body.appendChild(document.createElement('br'));
+    topContainer.appendChild(document.createElement('div')).className="mb-3"
 
 
 
 
 
 
-/*     // Append the first 20 lines to the document body
-    for (let i = 0; i < 20 && i < processedFileLines.length; i++) {
-      const line = processedFileLines[i];
-      const lineElement = document.createElement('p');
-      lineElement.textContent = line;
-      document.body.appendChild(lineElement);
-    } */
+    /*     // Append the first 20 lines to the document body
+        for (let i = 0; i < 20 && i < processedFileLines.length; i++) {
+          const line = processedFileLines[i];
+          const lineElement = document.createElement('p');
+          lineElement.textContent = line;
+          document.body.appendChild(lineElement);
+        } */
 
     // Append the download link to the HTML document
-    document.body.appendChild(downloadLink);
+    topContainer.appendChild(downloadLink);
 
-    document.body.appendChild(document.createElement('br'));
+    topContainer.appendChild(document.createElement('br'));
 
   })
 }
