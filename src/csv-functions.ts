@@ -71,7 +71,7 @@ export function csvParse(
     fileContents: string,
     csvData: string[][]
 ) {
-    // get the raw data, skipping the header
+    // get the raw data, skipping the document title e.g. "World Business MasterCard xxxx-xxxx-xxxx-1234"
     const raw = fileContents
     const rawData = raw.slice(raw.indexOf(`\n`) + 1)
     // parse the raw data into a 2d array of strings
@@ -82,7 +82,8 @@ export function csvParse(
         cast: cast,
         onRecord: onRecord,
     })
-    // replace the header
+    // replace the HSBC CSV header with the Xero header
     csvData[0] = ["Date", "Amount", "Payee", "Description"]
+    
     return csvData
 }

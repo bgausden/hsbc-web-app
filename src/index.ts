@@ -18,6 +18,12 @@ function isFileList(arg: unknown): asserts arg is FileList {
   }
 }
 
+function isFile(arg:unknown): arg is File {
+return arg instanceof File
+}
+
+
+
 export function main() {
   // Get the file input element from the HTML document
   const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
@@ -33,6 +39,7 @@ export function main() {
     const fileList = fileInput.files;
     isFileList(fileList)
     const file = fileList[0];
+    if (!isFile(file)) {return}
 
     // Read the contents of the file
     const fileContents = await file.text();
