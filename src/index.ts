@@ -18,8 +18,8 @@ function isFileList(arg: unknown): asserts arg is FileList {
   }
 }
 
-function isFile(arg:unknown): arg is File {
-return arg instanceof File
+function isFile(arg: unknown): arg is File {
+  return arg instanceof File
 }
 
 
@@ -39,7 +39,7 @@ export function main() {
     const fileList = fileInput.files;
     isFileList(fileList)
     const file = fileList[0];
-    if (!isFile(file)) {return}
+    if (!isFile(file)) { return }
 
     // Read the contents of the file
     const fileContents = await file.text();
@@ -67,12 +67,12 @@ export function main() {
     const topContainer = document.querySelector('#top-container')
     assertNotNull(topContainer)
 
-    topContainer.appendChild(document.createElement('div')).className="mb-3"
+    topContainer.appendChild(document.createElement('div')).className = "mb-3"
 
     const sampleDataDiv = topContainer.appendChild(document.createElement('div'))
     sampleDataDiv.id = 'sample-data-div'
     sampleDataDiv.className = 'mb-3'
-    
+
     // Create a heading for the sample data
     const sampleDataHeading = document.createElement('h5');
     sampleDataHeading.textContent = 'Sample data';
@@ -105,7 +105,7 @@ export function main() {
       table.appendChild(rowElement);
     }
 
-    topContainer.appendChild(document.createElement('div')).className="mb-3"
+    topContainer.appendChild(document.createElement('div')).className = "mb-3"
 
 
 
@@ -121,7 +121,14 @@ export function main() {
         } */
 
     // Append the download link to the HTML document
-    topContainer.appendChild(downloadLink);
+    //topContainer.appendChild(downloadLink);
+    const downloadButton = document.createElement('button');
+    downloadButton.textContent = 'Download File';
+    downloadButton.className = 'btn btn-primary'
+    downloadButton.addEventListener('click', () => {
+      window.location.href = downloadLink.href;
+    });
+    topContainer.appendChild(downloadButton);
 
     topContainer.appendChild(document.createElement('br'));
 
