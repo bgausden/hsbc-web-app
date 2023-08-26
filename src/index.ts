@@ -12,13 +12,13 @@ function assertNotNull<T>(arg: T): asserts arg is NonNullable<T> {
   }
 }
 
-function isFileList(arg: unknown): asserts arg is FileList {
-  if (!(arg instanceof FileList)) {
+export function isFileList(arg: unknown): asserts arg is FileList {
+  if (!(arg instanceof FileList) && (arg instanceof Object && Object.keys(arg).length === 0)) {
     throw new Error('Element is not a FileList!');
   }
 }
 
-function isFile(arg: unknown): arg is File {
+export function isFile(arg: unknown): arg is File {
   return arg instanceof File
 }
 
@@ -135,4 +135,3 @@ export function main() {
   })
 }
 
-main()
