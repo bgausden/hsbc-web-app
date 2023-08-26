@@ -28,7 +28,7 @@
             "type": "node",
             "request": "launch",
             "name": "Mocha Tests",
-            "program": "${workspaceFolder}/node_modules/.bin/mocha",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/mocha.js",
             "args": [
                 // moved to .mocharc.json
                 //"-n experimental-specifier-resolution=node,loader=ts-node/esm,no-warnings",

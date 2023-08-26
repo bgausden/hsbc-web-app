@@ -6,7 +6,7 @@
   "main": "src/index.ts",
   "private": true,
   "scripts": {
-    "test": "node_modules/.bin/mocha",
+    "test": "node node_modules/mocha/bin/mocha.js",
     "develop": "webpack-dev-server --mode development",
     "build": "webpack --mode production"
   },
