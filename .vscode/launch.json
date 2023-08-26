@@ -6,12 +6,14 @@
     "configurations": [
         {
             "type": "msedge",
+            "version": "stable",
             "request": "launch",
             "name": "Open index.html",
             "file": "d:\\git\\hsbc-web-app\\src\\index.html"
         },
         {
             "type": "msedge",
+            "version": "stable",
             "request": "launch",
             "name": "webpack",
             "url": "http://127.0.0.1:8080/index.html",
@@ -21,6 +23,24 @@
             "sourceMapPathOverrides": {
                 "webpack://hsbc-web-app/./*": "${workspaceFolder}/*",
             }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha Tests",
+            "program": "${workspaceFolder}/node_modules/.bin/mocha",
+            "args": [
+                // moved to .mocharc.json
+                //"-n experimental-specifier-resolution=node,loader=ts-node/esm,no-warnings",
+                //"--extension ts",
+                //"--inspect-brk",
+            ],
+            "console": "integratedTerminal",
+            //"internalConsoleOptions": "neverOpen",
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+            ]
         }
     ]
 }
