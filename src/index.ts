@@ -22,9 +22,7 @@ export function isFile(arg: unknown): arg is File {
   return arg instanceof File
 }
 
-
-
-export function main() {
+export function EntryPoint() {
   // Get the file input element from the HTML document
   const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
 
@@ -46,7 +44,7 @@ export function main() {
 
     // Process the file contents as needed
     //const processedContents = fileContents.toUpperCase();
-    const reader = new (FileReader);
+    // const reader = new (FileReader);
     let csvData: string[][] = []
 
 
@@ -107,21 +105,6 @@ export function main() {
 
     topContainer.appendChild(document.createElement('div')).className = "mb-3"
 
-
-
-
-
-
-    /*     // Append the first 20 lines to the document body
-        for (let i = 0; i < 20 && i < processedFileLines.length; i++) {
-          const line = processedFileLines[i];
-          const lineElement = document.createElement('p');
-          lineElement.textContent = line;
-          document.body.appendChild(lineElement);
-        } */
-
-    // Append the download link to the HTML document
-    //topContainer.appendChild(downloadLink);
     const downloadButton = document.createElement('button');
     downloadButton.textContent = 'Download File';
     downloadButton.className = 'btn btn-primary'
@@ -135,3 +118,7 @@ export function main() {
   })
 }
 
+if (typeof window !== "undefined" && typeof window.document !== "undefined") {
+  // We are in the browser
+  EntryPoint();
+}
