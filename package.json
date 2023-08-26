@@ -6,7 +6,7 @@
   "main": "src/index.ts",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node_modules/.bin/mocha",
     "develop": "webpack-dev-server --mode development",
     "build": "webpack --mode production"
   },
@@ -17,13 +17,19 @@
     "csv-parse": "^5.4.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.3.5",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20.5.6",
+    "chai": "^4.3.7",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.3",
+    "mocha": "^10.2.0",
     "process": "^0.11.10",
     "ts-loader": "^9.4.4",
-    "typescript": "^5.1.6",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2",
     "url": "^0.11.1",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
