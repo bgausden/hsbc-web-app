@@ -14,10 +14,9 @@ export default async (env, options) => {
       path: path.resolve(__dirname, "dist"),
       filename: 'bundle.js',
     },
-    devtool: "inline-source-map",
-    entry: "./src/index.ts",
+    devtool: "source-map",
+    entry: ["./src/index.ts"],
     resolve: {
-      extensions: [".ts", ".tsx", ".html", ".js"],
       extensionAlias: {
         ".js": [".js", ".ts"],
         ".cjs": [".cjs", ".cts"],
@@ -37,9 +36,15 @@ export default async (env, options) => {
           use: "html-loader"
         },
         {
-          test: /\.(css|svg|jpg|jpeg|gif|png)$/,
+          test: /\.(svg|jpg|jpeg|gif|png)$/,
           type: 'asset/resource'
-        }
+        },
+        {
+          test: /\.css$/i,
+          use: [
+            'style-loader', 'css-loader'
+          ]
+        },
       ]
     },
     plugins: [

@@ -1,4 +1,5 @@
 import { csvParse } from "./csv-functions.js";
+import './style-loader.mjs'
 
 function isForm(element: unknown): asserts element is HTMLFormElement {
   if (!(element instanceof HTMLFormElement)) {
