@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import { describe, it } from 'mocha';
-import { isFileList } from '../src/index.js';
+import { isFileList } from '../src/asserts.js';
 
 class MockFileList {
     length: number;

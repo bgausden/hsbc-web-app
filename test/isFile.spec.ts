@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { isFile } from '../src/index.js';
+import { isFile } from '../src/asserts.js';
 
 describe('test isFile', function () {
     /* it('test isFile', function (done) {
