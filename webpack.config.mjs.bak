@@ -27,7 +27,7 @@ export default async (env, options) => {
       rules: [
         {
           test: /\.([cm]?ts|tsx)$/,
-          exclude: [/node_modules/],
+          exclude: /node_modules/,
           use: "ts-loader"
         },
         {
@@ -53,14 +53,14 @@ export default async (env, options) => {
         filename: "index.html",
         template: "src/index.html"
       }),
-      new CopyWebpackPlugin({
-        patterns: [
-          {
-            to: "index.css",
-            from: "./src/index.css"
-          }
-        ]
-      }),
+      /*       new CopyWebpackPlugin({
+              patterns: [
+                {
+                  to: "index.css",
+                  from: "./src/index.css"
+                }
+              ]
+            }), */
     ],
     devServer: {
       headers: {
