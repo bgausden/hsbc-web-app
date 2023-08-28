@@ -1,7 +1,8 @@
 import { handleSubmit } from "./handleSubmit.js";
-import { isForm, isHTMLInputElement } from "./asserts.js";
-import "./style-loader.mjs"; // just so webpack includes bootstrap css in the bundle
 import { handleFileChange } from "./handleFileChange.js";
+import { isForm, isHTMLInputElement } from "./asserts.js";
+import "bootstrap"
+import "bootstrap/dist/css/bootstrap.min.css"
 
 export function EntryPoint() {
   // Listen for the form submission event
