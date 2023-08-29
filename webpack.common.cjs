@@ -24,14 +24,15 @@ module.exports = ((env, args) => {
                     //exclude: /node_modules/,
                     use: "ts-loader"
                 },
-                /* { // obsoleted by configuring SCSS support below
-                    test: /\.css$/i,
-                    use: [
-                        'style-loader', 'css-loader'
-                    ]
-                }, */
+                // load compiled CSS from node_modules w/o compilation
                 {
-                    test: /\.(s?css)$/,
+                    test: /\.css$/i,
+                    include: /node_modules/,
+                    loader: 'css-loader',
+                },
+                // compile SCSS files into CSS
+                {
+                    test: /\.(scss)$/,
                     use: [{
                         loader: 'css-loader', // translates CSS into CommonJS modules
                     }, {
