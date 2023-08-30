@@ -24,15 +24,8 @@ module.exports = ((env, args) => {
                     //exclude: /node_modules/,
                     use: "ts-loader"
                 },
-                // load compiled CSS from node_modules w/o compilation
                 {
-                    test: /\.css$/i,
-                    include: /node_modules/,
-                    loader: 'css-loader',
-                },
-                // compile SCSS files into CSS
-                {
-                    test: /\.(scss)$/,
+                    test: /\.(sc?ss)$/,
                     use: [{
                         loader: 'css-loader', // translates CSS into CommonJS modules
                     }, {
@@ -83,6 +76,11 @@ module.exports = ((env, args) => {
                     options: {
                     usePolling: true,
                 },
+            },
+            client: {
+                overlay: {
+                    warnings: false, // disable warnings popup windows in browser
+                }
             },
         },
     }
