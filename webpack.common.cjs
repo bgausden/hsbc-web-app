@@ -64,7 +64,7 @@ module.exports = ((env, args) => {
                 css: {
                     // output filename of extracted CSS, used if `inline` option is false (defaults)
                     filename: '[name].[contenthash:8].css',
-                    inline: true, // inlines CSS into HTML
+                    inline: false, // inlines CSS into HTML
                 },
             }),
         ],
@@ -72,8 +72,8 @@ module.exports = ((env, args) => {
         devServer: {
             static: path.join(__dirname, 'dist'),
             watchFiles: {
-                    paths: ['src/**/*.*'],
-                    options: {
+                paths: ['src/**/*.*'],
+                options: {
                     usePolling: true,
                 },
             },
