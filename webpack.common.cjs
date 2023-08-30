@@ -1,16 +1,13 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin")
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 /* const url = require('url').URL
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url)); */
 const path = require("path");
+const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
 
 module.exports = ((env, args) => {
     config = {
         context: path.resolve(__dirname, './'),
-        entry: './src/index.ts',
         output: {
             path: path.resolve(__dirname, "dist"),
-            //filename: "[name].[contenthash].js",
             clean: true, // clean the output directory before emit
         },
         resolve: {
@@ -27,18 +24,9 @@ module.exports = ((env, args) => {
                     //exclude: /node_modules/,
                     use: "ts-loader"
                 },
-                /* { // obsoleted by configuring SCSS support below
-                    test: /\.css$/i,
-                    use: [
-                        'style-loader', 'css-loader'
-                    ]
-                }, */
                 {
-                    test: /\.(s?css)$/,
+                    test: /\.(sc?ss)$/,
                     use: [{
-                        loader: 'style-loader', // inject CSS to page
-                        //loader: MiniCssExtractPlugin.loader // optionally extract CSS into separate files and inject into page
-                    }, {
                         loader: 'css-loader', // translates CSS into CommonJS modules
                     }, {
                         loader: 'postcss-loader', // Run post css actions
@@ -57,28 +45,44 @@ module.exports = ((env, args) => {
                     }]
                 },
                 {
-                    test: /\.html$/,
-                    //exclude: /node_modules/,
-                    loader: "html-loader",
-                    options: {
-                        minimize: false
-                    }
-                },
-                {
                     test: /\.(svg|jpg|jpeg|gif|png)$/,
                     type: 'asset/resource',
                 },
             ]
         },
         plugins: [
-            new HtmlWebpackPlugin({
-                template: "./src/index.html",
-                filename: "./index.html"
+            new HtmlBundlerPlugin({
+                entry: {
+                    // define templates here
+                    index: './src/index.html', // => dist/index.html
+                },
+                js: {
+                    // output filename of compiled JavaScript, used if `inline` option is false (defaults)
+                    filename: '[name].[contenthash:8].js',
+                    //inline: true, // inlines JS into HTML
+                },
+                css: {
+                    // output filename of extracted CSS, used if `inline` option is false (defaults)
+                    filename: '[name].[contenthash:8].css',
+                    inline: false, // inlines CSS into HTML
+                },
             }),
-            /* new MiniCssExtractPlugin({ // only needed if MiniCssExtractPlugin.loader (above) is enabled
-                filename: 'main.css',
-            }), */
         ],
+        // enable live reload
+        devServer: {
+            static: path.join(__dirname, 'dist'),
+            watchFiles: {
+                paths: ['src/**/*.*'],
+                options: {
+                    usePolling: true,
+                },
+            },
+            client: {
+                overlay: {
+                    warnings: false, // disable warnings popup windows in browser
+                }
+            },
+        },
     }
     return config
 })()
