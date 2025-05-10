@@ -19,7 +19,7 @@
   "author": "barry@lissome.hk",
   "license": "ISC",
   "dependencies": {
-    "bootstrap": "^5.3.1",
+    "bootstrap": "^5.3.6",
     "csv-parse": "^5.6.0"
   },
   "devDependencies": {
