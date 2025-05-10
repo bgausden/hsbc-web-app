@@ -31,10 +31,8 @@ export const handleSubmit =
         // Process the file contents as needed
         //const processedContents = fileContents.toUpperCase();
         // const reader = new (FileReader);
-        let csvData: string[][] = [];
 
-
-        csvData = csvParse(fileContents, csvData);
+        const csvData = csvParse(fileContents);
 
         assertNotNull(csvData);
 
