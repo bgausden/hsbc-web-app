@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import { describe, it } from 'vitest';
-import { isFile } from '../src/asserts.js';
+import { isFile } from '../src/core/utils/asserts.js';
 
 describe('test isFile', function () {
   it('should return false for a string', function () {

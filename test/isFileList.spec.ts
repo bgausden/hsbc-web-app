@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import { describe, it, afterAll } from 'vitest';
-import { isFileList } from '../src/asserts.js';
+import { isFileList } from '../src/core/utils/asserts.js';
 
 class MockFileList {
   length: number;

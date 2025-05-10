@@ -5,7 +5,10 @@ export default defineConfig({
     test: {
         globals: true,
         environment: 'jsdom',
-        include: ['test/**/*.spec.{ts,js}'],
+        include: [
+            'test/**/*.spec.{ts,js}',
+            'src/features/**/*.spec.{ts,js}'
+        ],
     },
     resolve: {
         extensions: ['.ts', '.js']

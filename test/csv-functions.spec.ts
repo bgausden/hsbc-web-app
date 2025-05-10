@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { csvParse } from '../src/csv-functions.js';
+import { csvParse } from '../src/features/csv-processing/services/csv-parser.js';
 
 describe('csvParse function', () => {
   // Basic parsing test

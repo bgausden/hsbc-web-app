@@ -31,8 +31,16 @@ This document summarizes the changes made to migrate the project from Webpack to
    - Added JSDOM for browser environment testing
 
 5. **CSS/SCSS**
+
    - Configured Vite to handle SCSS files
    - Updated imports in TypeScript files
+
+6. **Project Structure**
+   - Reorganized codebase into a feature-based structure
+   - Separated concerns with dedicated directories for core, features, and UI
+   - Co-located tests with their corresponding features
+   - Added type definitions for better type safety
+   - Created logical boundaries between different parts of the application
 
 ## Benefits of Vite
 

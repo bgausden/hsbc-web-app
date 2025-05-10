@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import * as fs from 'fs';
-import { assertNotNull } from '../src/asserts.js';
+import { assertNotNull } from '../src/core/utils/asserts.js';
 
 // We need to use a workaround to test private functions in the module
 // This approach creates a test-only export version of the functions

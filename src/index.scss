@@ -1,3 +1,9 @@
-@use "custom";
+// Main application styles
+// Imports the main stylesheet from the UI styles directory
+@use "ui/styles/main";
+
 // load source SCSS from bootstrap module
 @use "bootstrap/scss/bootstrap" as bootstrap;
+
+/* // Custom styles
+@use "custom"; */

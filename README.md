@@ -51,18 +51,38 @@ The production build will be available in the `dist` folder.
 
 ## Project Structure
 
-- `src/`: Source code
-  - `index.html`: Main HTML file
-  - `index.ts`: Entry point for the application
-  - `index.scss`: Main stylesheet
-  - Other TypeScript files for application logic
-- `test/`: Test files
-- `dist/`: Production build output (generated when running `npm run build`)
+The project follows a feature-based organization:
 
-## Technologies Used
+```
+src/
+├── core/                # Core utilities, types, and base functionality
+│   ├── types/           # TypeScript interfaces and types
+│   ├── utils/           # Utility functions
+│   └── config/          # App configuration
+├── features/            # Feature-based modules
+│   ├── csv-processing/  # CSV functionality
+│   │   ├── services/    # CSV processing logic
+│   │   └── tests/       # Tests for CSV processing
+│   └── file-handling/   # File handling functionality
+│       ├── services/    # File operations
+│       └── tests/       # Tests for file handling
+├── ui/                  # UI components and styling
+│   ├── components/      # Reusable UI components
+│   └── styles/          # SCSS files
+└── assets/              # Static assets
+```
 
-- TypeScript
-- Vite
-- Vitest for testing
-- Bootstrap for styling
-- CSV-Parse for parsing CSV files
+## Testing
+
+Tests are co-located with their corresponding features:
+
+```bash
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
+```

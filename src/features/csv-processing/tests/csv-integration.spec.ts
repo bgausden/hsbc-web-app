@@ -1,5 +1,8 @@
+/**
+ * CSV Parser Integration Tests
+ */
 import { describe, it, expect, assert } from 'vitest';
-import { csvParse } from '../src/features/csv-processing/services/csv-parser.js';
+import { csvParse } from '../services/csv-parser.js';
 
 // Mock a sample CSV file for testing
 const mockCsvContent = `World Business MasterCard xxxx-xxxx-xxxx-1234
