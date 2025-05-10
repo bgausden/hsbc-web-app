@@ -5,7 +5,13 @@ import { csvParse } from '../../features/csv-processing/services/csv-parser.js';
 import {
   createCsvFile,
   readFileAsText,
+  getProcessedFilename,
 } from '../../features/file-handling/services/file-operations.js';
+import {
+  isValidCsvFile,
+  isAcceptableFileSize,
+  hasValidCsvContent,
+} from '../../features/file-handling/services/file-validation.js';
 import { isFileList, assertNotNull, isHTMLInputElement } from '../../core/utils/asserts.js';
 import { createSampleTable } from './sample-table.component.js';
 
@@ -42,16 +48,34 @@ export const handleSubmit = async (event: SubmitEvent): Promise<void> => {
     return;
   }
 
+  // Security validation for file type and size
+  if (!isValidCsvFile(file)) {
+    alert('Please select a valid CSV file');
+    return;
+  }
+
+  if (!isAcceptableFileSize(file)) {
+    alert('File is too large. Please select a file smaller than 5MB');
+    return;
+  }
+
   try {
     // Read the contents of the file
     const fileContents = await readFileAsText(file);
+
+    // Validate file content format
+    if (!hasValidCsvContent(fileContents)) {
+      alert('The file does not appear to contain valid CSV data');
+      return;
+    }
 
     // Process the file contents and parse CSV
     const csvData = csvParse(fileContents);
     assertNotNull(csvData);
 
-    // Create a processed CSV file
-    const processedFile = createCsvFile(csvData);
+    // Create a processed CSV file with a modified name based on original file
+    const processedFilename = getProcessedFilename(file.name);
+    const processedFile = createCsvFile(csvData, processedFilename);
 
     // Create and show output UI
     createOutputUI(csvData, processedFile);
@@ -96,7 +120,24 @@ function createOutputUI(csvData: string[][], processedFile: File): void {
   downloadButton.textContent = 'Download File';
   downloadButton.className = 'btn btn-primary';
   downloadButton.addEventListener('click', () => {
-    window.location.href = URL.createObjectURL(processedFile);
+    // Create a secure download link with proper attributes
+    const downloadLink = document.createElement('a');
+    const objectUrl = URL.createObjectURL(processedFile);
+
+    // Set up download attributes
+    downloadLink.href = objectUrl;
+    downloadLink.download = processedFile.name;
+    downloadLink.rel = 'noopener noreferrer';
+
+    // Append temporarily, click, and remove
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+    // Clean up to avoid memory leaks
+    setTimeout(() => {
+      document.body.removeChild(downloadLink);
+      URL.revokeObjectURL(objectUrl);
+    }, 100);
   });
   outputDiv.appendChild(downloadButton);
 

@@ -2,6 +2,18 @@
  * Creates a sample table to display CSV data
  */
 import { assertNotNull } from '../../core/utils/asserts.js';
+import { sanitizeString } from '../../features/csv-processing/services/sanitization.js';
+
+/**
+ * Safely sets text content with sanitization
+ *
+ * @param element The HTML element to set content on
+ * @param content The content to set
+ */
+function safeSetTextContent(element: HTMLElement, content: string): void {
+  // Text content is already safe from XSS, but we sanitize as an extra precaution
+  element.textContent = sanitizeString(content);
+}
 
 /**
  * Creates a table element to display sample CSV data
@@ -30,7 +42,7 @@ export function createSampleTable(csvData: string[][]): HTMLTableElement {
   for (let i = 0; i < csvData[0].length; i++) {
     const column = csvData[0][i];
     const header = document.createElement('th');
-    header.textContent = column;
+    safeSetTextContent(header, column);
     header.style.padding = '8px';
     header.style.borderSpacing = '0 15px';
 
@@ -63,15 +75,15 @@ export function createSampleTable(csvData: string[][]): HTMLTableElement {
         const numValue = parseFloat(value);
 
         if (!isNaN(numValue)) {
-          cell.textContent = numValue.toFixed(2);
+          safeSetTextContent(cell, numValue.toFixed(2));
         } else {
-          cell.textContent = value;
+          safeSetTextContent(cell, value);
         }
 
         // Right-align the Amount column
         cell.style.textAlign = 'right';
       } else {
-        cell.textContent = row[j];
+        safeSetTextContent(cell, row[j]);
       }
 
       cell.style.padding = '8px';

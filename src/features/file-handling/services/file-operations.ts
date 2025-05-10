@@ -43,3 +43,32 @@ export const createCsvFile = (csvData: string[][], filename = 'processed.csv'): 
   const csvString = csvData.map((row) => row.join(',')).join('\n');
   return new File([csvString], filename, { type: 'text/csv' });
 };
+
+/**
+ * Generates a processed filename based on the original filename
+ *
+ * @param originalFilename The original filename
+ * @returns A new filename with "-processed" appended before the extension
+ */
+export const getProcessedFilename = (originalFilename: string): string => {
+  // Handle cases where the filename might not have an extension
+  if (!originalFilename || originalFilename.trim() === '') {
+    return 'processed.csv';
+  }
+
+  // Extract the basename and extension
+  const lastDotIndex = originalFilename.lastIndexOf('.');
+
+  if (lastDotIndex === -1) {
+    // No extension found
+    return `${originalFilename}-processed.csv`;
+  }
+
+  const basename = originalFilename.substring(0, lastDotIndex);
+  const extension = originalFilename.substring(lastDotIndex);
+
+  // Make sure we maintain the .csv extension
+  const finalExtension = extension.toLowerCase() === '.csv' ? extension : '.csv';
+
+  return `${basename}-processed${finalExtension}`;
+};

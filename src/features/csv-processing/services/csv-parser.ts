@@ -4,6 +4,7 @@
 import { parse } from 'csv-parse/browser/esm/sync';
 import { assertNotNull } from '../../../core/utils/asserts.js';
 import { cast, onRecord } from './csv-helpers.js';
+import { sanitizeCsvData } from './sanitization.js';
 
 /**
  * Parses HSBC CSV content and transforms it to Xero-compatible format
@@ -41,5 +42,6 @@ export function csvParse(fileContents: string): string[][] {
   // replace the HSBC CSV header with the Xero header
   csvData[0] = ['Date', 'Amount', 'Payee', 'Description'];
 
-  return csvData;
+  // Sanitize all data to prevent XSS attacks before returning
+  return sanitizeCsvData(csvData);
 }

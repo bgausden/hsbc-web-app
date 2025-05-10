@@ -5,6 +5,7 @@
 import { handleSubmit, handleFileChange } from './ui/components/index.js';
 import { isForm } from './core/utils/asserts.js';
 import { checkBrowserCompatibility } from './core/utils/browser-check.js';
+import { setupCsrfProtection, addCsrfTokenToForm } from './core/utils/security.js';
 import 'bootstrap';
 import './index.scss';
 
@@ -14,10 +15,17 @@ import './index.scss';
 export function EntryPoint() {
   // Check for browser compatibility
   checkBrowserCompatibility();
-  
+
+  // Setup security measures
+  setupCsrfProtection();
+
   // Listen for the form submission event
   const form = document.querySelector('#fileSelect');
   isForm(form);
+
+  // Add CSRF protection to form
+  addCsrfTokenToForm(form);
+
   form.addEventListener('submit', handleSubmit);
 
   const input = document.querySelector('#formFile') as HTMLInputElement;
