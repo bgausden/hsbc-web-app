@@ -1,4 +1,5 @@
 import { parse, CastingContext } from "csv-parse/browser/esm/sync";
+import { assertNotNull } from "./asserts.js";
 
 const PAYMENT = /PAYMENT - THANK YOU.*$/;
 const RETURN = /RETURN:.*$/;
@@ -15,6 +16,11 @@ const onRecord = (
   { raw, record }: { raw: string; record: string[] },
   context: CastingContext,
 ) => {
+  // Validate record exists
+  if (!Array.isArray(record)) {
+    return null;
+  }
+
   if (record.length <= 1) {
     // empty record, return null
     return null;
@@ -61,6 +67,11 @@ const onRecord = (
 };
 
 function setSign(record: string[]) {
+  assertNotNull(record);
+  if (record.length <= AMOUNT_INDEX) {
+    return; // Not enough fields to process
+  }
+
   if (
     record[DESCRIPTION_INDEX]?.match(PAYMENT) ||
     record[DESCRIPTION_INDEX]?.match(RETURN)
@@ -74,6 +85,12 @@ function setSign(record: string[]) {
 }
 
 export function csvParse(fileContents: string): string[][] {
+  // Validate input
+  assertNotNull(fileContents);
+  if (fileContents.trim() === "") {
+    throw new Error("CSV content cannot be empty");
+  }
+
   // get the raw data, skipping the document title e.g. "World Business MasterCard xxxx-xxxx-xxxx-1234"
   const raw = fileContents;
   const rawData = raw.slice(raw.indexOf(`\n`) + 1);
@@ -85,6 +102,13 @@ export function csvParse(fileContents: string): string[][] {
     cast: cast,
     onRecord: onRecord,
   });
+
+  // Validate parsed data
+  assertNotNull(csvData);
+  if (!Array.isArray(csvData) || csvData.length === 0) {
+    throw new Error("Failed to parse CSV data properly");
+  }
+
   // replace the HSBC CSV header with the Xero header
   csvData[0] = ["Date", "Amount", "Payee", "Description"];
 
