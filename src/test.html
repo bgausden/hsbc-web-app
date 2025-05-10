@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vite Test</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Vite Build Test</h1>
+        <p>If you can see this page with styling, Vite is working!</p>
+        <button class="btn btn-primary" id="testButton">Test Button</button>
+    </div>
+    <script type="module">
+        document.getElementById('testButton').addEventListener('click', () => {
+            alert('Button clicked!');
+        });
+    </script>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+    </style>
+</body>
+
+</html>
