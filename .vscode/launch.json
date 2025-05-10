@@ -6,14 +6,12 @@
     "configurations": [
         {
             "type": "msedge",
-            "version": "stable",
             "request": "launch",
             "name": "Open index.html",
             "file": "d:\\git\\hsbc-web-app\\src\\index.html"
         },
         {
             "type": "msedge",
-            "version": "stable",
             "request": "launch",
             "name": "webpack",
             "url": "http://127.0.0.1:8080/index.html",
