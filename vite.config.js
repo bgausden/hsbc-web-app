@@ -1,7 +1,6 @@
 // vite.config.js
 import {defineConfig} from 'vite';
 import {resolve} from 'path';
-import legacy from '@vitejs/plugin-legacy';
 
 export default defineConfig({
     root: 'src',
@@ -25,11 +24,7 @@ export default defineConfig({
         },
         devSourcemap: true
     },
-    plugins: [
-        legacy({
-            targets: ['defaults', 'not IE 11'],
-        })
-    ],
+    plugins: [],
     test: {
         globals: true,
         environment: 'jsdom',

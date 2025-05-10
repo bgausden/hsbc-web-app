@@ -1,9 +1,9 @@
-# Browsers we support
+# Browsers we support - Modern Browsers Only
 
->= 1%
-last 2 versions
-not dead
-Chrome >= 60
-Firefox >= 60
-Safari >= 12
+last 2 Chrome versions
+last 2 Firefox versions
+last 2 Safari versions
+last 2 Edge versions
 not IE 11
+not Opera Mini all
+not dead

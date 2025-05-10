@@ -2,6 +2,16 @@
 
 A simple web application to convert downloaded HSBC-format CSV credit card statements to Xero format CSV.
 
+## Browser Support
+
+This application is designed for modern browsers only:
+- Chrome (last 2 versions)
+- Firefox (last 2 versions)
+- Safari (last 2 versions)
+- Edge (last 2 versions)
+
+Internet Explorer is not supported.
+
 ## Development Setup
 
 This project uses [Vite](https://vitejs.dev/) for development and building.

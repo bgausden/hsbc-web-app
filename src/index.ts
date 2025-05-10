@@ -4,6 +4,7 @@
  */
 import { handleSubmit, handleFileChange } from './ui/components/index.js';
 import { isForm } from './core/utils/asserts.js';
+import { checkBrowserCompatibility } from './core/utils/browser-check.js';
 import 'bootstrap';
 import './index.scss';
 
@@ -11,6 +12,9 @@ import './index.scss';
  * Entry point function that sets up event listeners
  */
 export function EntryPoint() {
+  // Check for browser compatibility
+  checkBrowserCompatibility();
+  
   // Listen for the form submission event
   const form = document.querySelector('#fileSelect');
   isForm(form);

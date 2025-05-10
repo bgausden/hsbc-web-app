@@ -7,6 +7,22 @@
 @use "bootstrap/scss/bootstrap" as bootstrap;
 
 // Application-specific styles
+
+// Browser warning styles
+.browser-warning {
+  margin: 1rem;
+  padding: 1rem;
+  border: 2px solid #dc3545;
+  border-radius: 0.25rem;
+  
+  h4 {
+    color: #dc3545;
+  }
+  
+  ul {
+    margin-top: 0.5rem;
+  }
+}
 .file-upload-container {
   max-width: 600px;
   margin: 2rem auto;

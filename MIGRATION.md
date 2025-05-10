@@ -42,6 +42,12 @@ This document summarizes the changes made to migrate the project from Webpack to
    - Added type definitions for better type safety
    - Created logical boundaries between different parts of the application
 
+7. **Browser Support**
+   - Removed legacy browser support in favor of modern browsers only
+   - Eliminated polyfills and transpilation for older browsers
+   - Focused on Chrome, Firefox, Safari, and Edge (latest 2 versions)
+   - Improved performance through modern JavaScript and CSS features
+
 ## Benefits of Vite
 
 - **Faster Development**: Near-instantaneous hot module replacement
