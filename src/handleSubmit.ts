@@ -59,7 +59,7 @@ export const handleSubmit =
         outputDiv.appendChild(sampleDataHeading);
 
         // Create a table to display a sample of the data
-        createSampleTable(outputDiv, csvData);
+        outputDiv.appendChild(createSampleTable(csvData));
 
         outputDiv.appendChild(document.createElement('div')).className = "mb-3";
 
