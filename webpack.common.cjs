@@ -4,17 +4,21 @@ const path = require("path");
 const HtmlBundlerPlugin = require('html-bundler-webpack-plugin');
 
 module.exports = ((env, args) => {
-    config = {
+    const config = {
         context: path.resolve(__dirname, './'),
+        cache: {
+            type: 'filesystem',
+        },
         output: {
             path: path.resolve(__dirname, "dist"),
             clean: true, // clean the output directory before emit
         },
         resolve: {
+            extensions: ['.ts', '.tsx', '.js', '.jsx'],
             extensionAlias: {
-                ".js": [".js", ".ts"],
-                ".cjs": [".cjs", ".cts"],
-                ".mjs": [".mjs", ".mts"]
+                '.js': ['.ts', '.js'],
+                '.cjs': ['.cts', '.cjs'],
+                '.mjs': ['.mts', '.mjs']
             }
         },
         module: {
@@ -22,7 +26,12 @@ module.exports = ((env, args) => {
                 {
                     test: /\.([cm]?ts|tsx)$/,
                     //exclude: /node_modules/,
-                    use: "ts-loader"
+                    use: {
+                        loader: "ts-loader",
+                        options: {
+                            transpileOnly: true,
+                        }
+                    }
                 },
                 {
                     test: /\.(sc?ss)$/,
@@ -32,12 +41,9 @@ module.exports = ((env, args) => {
                         loader: 'postcss-loader', // Run post css actions
                         options: {
                             postcssOptions: {
-                                plugins: function() { // post css plugins, can be exported to postcss.config.js
-                                    return [
-                                        require('precss'),
-                                        require('autoprefixer')
-                                    ];
-                                }
+                                plugins: [
+                                    require('postcss-preset-env')({ stage: 2 }),
+                                ]
                             }
                         }
                     }, {
@@ -49,6 +55,18 @@ module.exports = ((env, args) => {
                     type: 'asset/resource',
                 },
             ]
+        },
+        optimization: {
+            splitChunks: {
+                chunks: 'all',
+                cacheGroups: {
+                    vendor: {
+                        test: /[\\/]node_modules[\\/]/,
+                        name: 'vendors',
+                        priority: 10,
+                    },
+                },
+            },
         },
         plugins: [
             new HtmlBundlerPlugin({
@@ -68,21 +86,6 @@ module.exports = ((env, args) => {
                 },
             }),
         ],
-        // enable live reload
-        devServer: {
-            static: path.join(__dirname, 'dist'),
-            watchFiles: {
-                paths: ['src/**/*.*'],
-                options: {
-                    usePolling: true,
-                },
-            },
-            client: {
-                overlay: {
-                    warnings: false, // disable warnings popup windows in browser
-                }
-            },
-        },
     }
     return config
 })()
