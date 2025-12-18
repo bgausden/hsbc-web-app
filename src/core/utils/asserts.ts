@@ -87,13 +87,8 @@ export function isValidRecord(record: unknown): asserts record is string[] {
   }
 }
 
-export function isCsvError(error: unknown): asserts error is CsvError {
-  if (!(error instanceof Error)) {
-    throw new Error('Provided error is not an instance of Error!');
-  }
-  if (!('code' in error)) {
-    throw new Error('Provided error is not a CsvError!');
-  }
+export function isCsvError(error: unknown): error is CsvError {
+  return error instanceof Error && 'code' in error;
 }
 
 export function isMissingDescription(record: string[]): boolean {

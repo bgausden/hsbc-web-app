@@ -59,11 +59,7 @@ Transactions included in previous statement,,,,
  */
 
 import { parse as syncParse, CsvError } from 'csv-parse/browser/esm/sync';
-import {
-  assertNotNull,
-  isCsvError,
-  isValidRecord,
-} from '../../../core/utils/asserts.js';
+import { assertNotNull, isCsvError, isValidRecord } from '../../../core/utils/asserts.js';
 import { cast, setSign, handleCommaInDescription, createOutputRow } from './csv-helpers.js';
 import { sanitizeCsvData } from './sanitization.js';
 
@@ -94,9 +90,14 @@ export function csvParse(fileContents: string): string[][] {
   for (const line of lines) {
     if (!line.trim()) continue;
 
+    // Normalize mixed tab+comma delimiters (HSBC uses both)
+    // HSBC format has tabs before/after commas: "date\t,date\t,description..."
+    // First remove the tabs, then we have clean comma-delimited data
+    const normalizedLine = line.replace(/\t/g, '');
+
     try {
       // Try to parse the line
-      const [record] = syncParse(line, {
+      const [record] = syncParse(normalizedLine, {
         skip_empty_lines: true,
         cast: cast,
         columns: false,
@@ -105,6 +106,13 @@ export function csvParse(fileContents: string): string[][] {
 
       // Validate and process the record
       if (record && Array.isArray(record)) {
+        if (record.length !== 5) {
+          // Wrong number of fields - likely comma in description
+          throw new CsvError(
+            'CSV_RECORD_INCONSISTENT_FIELDS_LENGTH',
+            `Expected 5 fields, got ${record.length}`
+          );
+        }
         isValidRecord(record);
         setSign(record);
         csvData.push(createOutputRow(record));
@@ -113,7 +121,7 @@ export function csvParse(fileContents: string): string[][] {
       // Handle parsing errors with recovery
       if (isCsvError(error)) {
         const csvError = error as CsvError;
-        
+
         if (
           csvError.code === 'CSV_RECORD_INCONSISTENT_COLUMNS' ||
           csvError.code === 'CSV_RECORD_INCONSISTENT_FIELDS_LENGTH' ||
@@ -121,7 +129,7 @@ export function csvParse(fileContents: string): string[][] {
         ) {
           // Try to fix malformed row (comma in description)
           try {
-            const fixedLine = handleCommaInDescription(line);
+            const fixedLine = handleCommaInDescription(normalizedLine);
             const [fixedRecord] = syncParse(fixedLine, {
               skip_empty_lines: true,
               cast: cast,
@@ -142,7 +150,43 @@ export function csvParse(fileContents: string): string[][] {
           console.warn('Skipping row with parse error:', csvError.code);
         }
       } else {
-        console.warn('Skipping invalid row:', (error as Error).message);
+        // Not a CSV error - might be validation error, try tab-delimited parsing
+        try {
+          const [tabRecord] = syncParse(line, {
+            skip_empty_lines: true,
+            cast: cast,
+            columns: false,
+            trim: true,
+            delimiter: '\t',
+          });
+
+          if (tabRecord && Array.isArray(tabRecord)) {
+            if (tabRecord.length !== 5) {
+              // Tab-delimited row also has wrong field count - try fixing with handleCommaInDescription
+              const fixedLine = handleCommaInDescription(line);
+              const [fixedTabRecord] = syncParse(fixedLine, {
+                skip_empty_lines: true,
+                cast: cast,
+                columns: false,
+                trim: true,
+              });
+
+              if (fixedTabRecord && Array.isArray(fixedTabRecord)) {
+                isValidRecord(fixedTabRecord);
+                setSign(fixedTabRecord);
+                csvData.push(createOutputRow(fixedTabRecord));
+                console.log('Fixed tab+comma row:', line.substring(0, 50) + '...');
+              }
+            } else {
+              isValidRecord(tabRecord);
+              setSign(tabRecord);
+              csvData.push(createOutputRow(tabRecord));
+              console.log('Parsed tab-delimited row:', line.substring(0, 50) + '...');
+            }
+          }
+        } catch (tabError) {
+          console.warn('Skipping invalid row:', (error as Error).message);
+        }
       }
     }
   }

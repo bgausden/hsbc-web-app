@@ -69,23 +69,33 @@ describe('handleCommaInDescription - Real CSV Data', () => {
   it('should handle lines with specific patterns found in HSBC data', () => {
     // Test some common patterns that might appear in real data
     const testCases = [
-      // MINDBODY case
-      '17 Jun 2025,16 Jun 2025,SALES: MINDBODY, INC. SAN LUIS OBISUS,USD 299.00,2366.83',
-      // Company with multiple commas
-      '18 Jun 2025,17 Jun 2025,SALES: AMAZON, LOGISTICS, INC. LOCATION,GBP 45.50,400.25',
-      // Restaurant with location
-      '19 Jun 2025,18 Jun 2025,SALES: RESTAURANT, DOWNTOWN, DISTRICT,EUR 75.00,650.00',
+      {
+        input: '17 Jun 2025,16 Jun 2025,SALES: MINDBODY, INC. SAN LUIS OBISUS,USD 299.00,2366.83',
+        expectedDescription: 'MINDBODY- INC. SAN LUIS OBISUS',
+        expectedForeignCurrency: 'USD 299.00',
+      },
+      {
+        input: '18 Jun 2025,17 Jun 2025,SALES: AMAZON, LOGISTICS, INC. LOCATION,GBP 45.50,400.25',
+        expectedDescription: 'AMAZON- LOGISTICS- INC. LOCATION',
+        expectedForeignCurrency: 'GBP 45.50',
+      },
+      {
+        input: '19 Jun 2025,18 Jun 2025,SALES: RESTAURANT, DOWNTOWN, DISTRICT,EUR 75.00,650.00',
+        expectedDescription: 'RESTAURANT- DOWNTOWN- DISTRICT',
+        expectedForeignCurrency: 'EUR 75.00',
+      },
     ];
 
-    testCases.forEach((testCase) => {
-      expect(() => {
-        const result = handleCommaInDescription(testCase);
-        // Verify the result has exactly 5 fields
-        const fields = result.split(',');
-        expect(fields).toHaveLength(5);
-        // Verify 4th field is empty (foreign currency position)
-        expect(fields[3]).toBe('');
-      }).not.toThrow();
+    testCases.forEach(({ input, expectedDescription, expectedForeignCurrency }) => {
+      const result = handleCommaInDescription(input);
+      const fields = result.split(',');
+
+      // Verify the result has exactly 5 fields
+      expect(fields).toHaveLength(5);
+      // Verify description (field 2) matches expected
+      expect(fields[2]).toBe(expectedDescription);
+      // Verify 4th field preserves foreign currency
+      expect(fields[3]).toBe(expectedForeignCurrency);
     });
   });
 });

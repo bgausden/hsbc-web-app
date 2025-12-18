@@ -144,11 +144,12 @@ export function handleCommaInDescription(raw: string): string {
   // If there are more than 5 fields, merge fields 3 and 4 repeatedly until we have exactly 5 fields
   while (fields.length > 5) {
     // Merge fields at index 2 and 3 (3rd and 4th fields)
-    const mergedField = fields[2] + ' ' + fields[3];
+    // The comma that separated these fields should become "- " (hyphen + space)
+    const mergedField = fields[2] + '- ' + fields[3];
 
-    // Replace commas with spaces and normalize whitespace
+    // Replace additional commas with "- " and normalize whitespace
     const cleanedField = mergedField
-      .replace(/,/g, ' ') // Replace commas with spaces
+      .replace(/,/g, '- ') // Replace remaining commas with "- " (hyphen + space)
       .replace(/\s+/g, ' ') // Replace multiple whitespace with single space
       .trim();
 
@@ -161,25 +162,28 @@ export function handleCommaInDescription(raw: string): string {
     throw new Error(`Expected exactly 5 fields after merging, got ${fields.length}`);
   }
 
-  // Validate that the 4th field (index 3) contains a valid currency pattern OR is empty
-  const currencyPattern = /^[A-Z]{3}\s+\d+\.\d{2}$/;
+  // Validate that the 4th field (index 3) contains a valid currency pattern OR amount OR is empty
+  const currencyPattern = /^[A-Z]{3}\s+\d+\.\d{2}$/; // e.g., "USD 299.00"
+  const amountPattern = /^\s*\d+\.\d{2}\s*$/; // e.g., " 299.00"
   const isEmpty = fields[3].trim() === '';
 
-  if (!isEmpty && !currencyPattern.test(fields[3].trim())) {
+  if (!isEmpty && !currencyPattern.test(fields[3].trim()) && !amountPattern.test(fields[3])) {
     throw new Error(
-      `5th field must contain currency name and amount (e.g. "USD 299.00") or be empty, got: "${fields[3]?.trim()}"`
+      `5th field must contain currency and amount (e.g. "USD 299.00"), amount only (e.g. "299.00"), or be empty, got: "${fields[3]?.trim()}"`
     );
   }
 
   // Clean up the description field (remove SALES: prefix)
   fields[2] = fields[2].replace(/SALES:\s+/g, '').trim();
 
-  // Create final result: Date1, Date2, Description, Empty, Amount
+  // Create final result: Date1, Date2, Description, ForeignCurrencyAmount, Amount
+  // Note: field[3] might contain foreign currency amount like "USD 299.00" or just "299.00"
+  // We preserve it (after trimming) so it can be appended to the description later
   const result = [
     fields[0], // Post Date
     fields[1], // Transaction Date
     fields[2], // Merged and cleaned Description
-    EMPTY_VALUE, // Insert empty 4th field (Foreign Currency Amount position)
+    fields[3].trim(), // Foreign Currency Amount (trimmed)
     fields[4], // Amount in HKD (last field)
   ];
 
