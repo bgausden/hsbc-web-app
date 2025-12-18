@@ -7,10 +7,7 @@
 			"problemMatcher": [
 				"$tsc"
 			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
+			"group": "build",
 			"label": "tsc: build - tsconfig.json"
 		},
 		{
@@ -22,6 +19,17 @@
 			],
 			"group": "build",
 			"label": "tsc: watch - tsconfig.json"
+		},
+		{
+			"type": "npm",
+			"script": "build",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [],
+			"label": "npm: build",
+			"detail": "vite build"
 		}
 	]
 }

@@ -35,6 +35,7 @@ export default defineConfig({
         preprocessorOptions: {
             scss: {
                 // Not using additionalData since we import directly in index.scss
+                quietDeps: true,
             }
         },
         devSourcemap: true

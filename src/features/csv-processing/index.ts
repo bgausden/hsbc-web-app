@@ -12,9 +12,9 @@ export {
   PAYMENT,
   RETURN,
   SALES,
-  TRANSACTION_DATE_INDEX,
-  DESCRIPTION_INDEX,
-  AMOUNT_INDEX,
+  HSBC_TRANSACTION_DATE_INDEX,
+  HSBC_DESCRIPTION_INDEX,
+  HSBC_AMOUNT_INDEX,
   cast,
   setSign,
 } from './services/csv-helpers.js';

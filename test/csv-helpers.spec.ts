@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, assert } from 'vitest';
 import * as fs from 'fs';
 import { assertNotNull } from '../src/core/utils/asserts.js';
+import { handleCommaInDescription, HSBC_DESCRIPTION_INDEX } from '../src/features/csv-processing/services/csv-helpers.js';
 
 // We need to use a workaround to test private functions in the module
 // This approach creates a test-only export version of the functions
@@ -13,10 +14,9 @@ function testSetSign(record: string[]): void {
 
   const PAYMENT = /PAYMENT - THANK YOU.*$/;
   const RETURN = /RETURN:.*$/;
-  const DESCRIPTION_INDEX = 2;
   const AMOUNT_INDEX = 4;
 
-  if (record[DESCRIPTION_INDEX]?.match(PAYMENT) || record[DESCRIPTION_INDEX]?.match(RETURN)) {
+  if (record[HSBC_DESCRIPTION_INDEX]?.match(PAYMENT) || record[HSBC_DESCRIPTION_INDEX]?.match(RETURN)) {
     // do nothing. The amount is already positive
     return;
   }
@@ -70,4 +70,5 @@ describe('CSV Helper Functions', () => {
       expect(testCast('  SALES:    DEPARTMENT    STORE  ')).toBe('DEPARTMENT STORE');
     });
   });
+
 });

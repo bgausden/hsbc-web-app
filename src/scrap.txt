@@ -1,0 +1,105 @@
+// scrap file
+
+/**
+ * Handles inconsistent columns in HSBC CSV data by fixing common issues
+ *
+ * @param raw The raw CSV line
+ * @param record The parsed record
+ * @param context The parsing context
+ * @returns Fixed record or null
+ */
+export function handleInconsistentColumns(raw: string, record: string[]) {
+  // find the 3rd comma in the line and replace it with a dash it as it's probably incorrectly
+  // part of the payee's name (and shouldn't be but HSBC are crap so...)
+  let stringRaw = raw as string;
+  /*   let counter = 3; // zero-based index
+  let nThIndex = 0;
+
+  if (counter > 0) {
+    while (counter--) {
+      // Get the index of the next occurence
+      nThIndex = stringRaw.indexOf(',', nThIndex + ','.length);
+    }
+  } 
+
+  stringRaw = stringRaw.substring(0, nThIndex) + stringRaw.substring(nThIndex + ','.length);
+  */
+
+  // Process stringRaw to ensure it contains exactly 5 comma-delimited fields
+  // by repeatedly replacing the 3rd comma with a hyphen until we have 5 fields
+  while (stringRaw.split(',').length > 5) {
+    // Find the index of the 3rd comma
+    let commaCount = 0;
+    let thirdCommaIndex = -1;
+
+    for (let i = 0; i < stringRaw.length; i++) {
+      if (stringRaw[i] === ',') {
+        commaCount++;
+        if (commaCount === 3) {
+          thirdCommaIndex = i;
+          break;
+        }
+      }
+    }
+
+    if (thirdCommaIndex !== -1) {
+      // Replace the 3rd comma with a hyphen
+      stringRaw = stringRaw.slice(0, thirdCommaIndex) + '-' + stringRaw.slice(thirdCommaIndex + 1);
+    } else {
+      break; // Safety check: if we can't find a 3rd comma, exit the loop
+    }
+  }
+
+  // If we couldn't process it correctly, revert to original
+  if (stringRaw.split(',').length !== 5) {
+    stringRaw = raw;
+  }
+
+  // call CSV.parse() again on the newly constructed line.
+  // This time should return the correct number of fields.
+  const result = parse(stringRaw, {
+    raw: true,
+    trim: true,
+    onRecord: onRecord,
+    cast: cast,
+  });
+
+  return result[0];
+}
+
+export function fixInconsistentColumns(raw: string): string {
+  // find the 3rd comma in the line and replace it with a dash it as it's probably incorrectly
+  // part of the payee's name (and shouldn't be but HSBC are crap so...)
+
+  // Process raw to ensure it contains exactly 5 comma-delimited fields
+  // by repeatedly replacing the 3rd comma with a hyphen until we have 5 fields
+  while (raw.split(',').length > 5) {
+    // Find the index of the 3rd comma
+    let commaCount = 0;
+    let thirdCommaIndex = -1;
+
+    for (let i = 0; i < raw.length; i++) {
+      if (raw[i] === ',') {
+        commaCount++;
+        if (commaCount === 3) {
+          thirdCommaIndex = i;
+          break;
+        }
+      }
+    }
+
+    if (thirdCommaIndex !== -1) {
+      // Replace the 3rd comma with a hyphen
+      raw = raw.slice(0, thirdCommaIndex) + '-' + raw.slice(thirdCommaIndex + 1);
+    } else {
+      break; // Safety check: if we can't find a 3rd comma, exit the loop
+    }
+  }
+
+  // If we couldn't process it correctly, return an empty string
+  if (raw.split(',').length !== 5) {
+    return '';
+  }
+
+  return raw;
+}

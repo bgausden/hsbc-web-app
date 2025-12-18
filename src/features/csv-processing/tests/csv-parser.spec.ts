@@ -11,13 +11,16 @@ describe('csvParse function', () => {
 Post Date,Transaction Date,Description,Foreign Amount,Amount(HKD)
 2023-04-01,2023-03-31,SUPERMARKET ABC,,100.00
 2023-04-02,2023-04-01,RESTAURANT XYZ,,250.50
-2023-04-03,2023-04-02,PAYMENT - THANK YOU,,1000.00`;
+2023-04-03,2023-04-02,PAYMENT - THANK YOU,,1000.00
+22 Apr 2025	,21 Apr 2025	,SALES:   MINDBODY, INC.            SAN LUIS OBISUS                                        	, 299.00	,2366.83
+`;
 
     const expected = [
       ['Date', 'Amount', 'Payee', 'Description'],
-      ['2023-04-01', '-100.00', '', 'SUPERMARKET ABC '],
-      ['2023-04-02', '-250.50', '', 'RESTAURANT XYZ '],
-      ['2023-04-03', '1000.00', '', 'PAYMENT - THANK YOU '],
+      ['2023-04-01', '-100.00', '', 'SUPERMARKET ABC'],
+      ['2023-04-02', '-250.50', '', 'RESTAURANT XYZ'],
+      ['2023-04-03', '1000.00', '', 'PAYMENT - THANK YOU'],
+      ['22 Apr 2025', '-2366.83', '', 'MINDBODY- INC. SAN LUIS OBISUS 299.00'],
     ];
 
     const result = csvParse(input);

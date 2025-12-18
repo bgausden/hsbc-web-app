@@ -1,9 +1,22 @@
 # Browsers we support - Modern Browsers Only
 
+# Target browsers with significant market share that are still receiving updates
+
 last 2 Chrome versions
 last 2 Firefox versions
 last 2 Safari versions
 last 2 Edge versions
+last 2 Opera versions
+
+# Explicitly exclude older browsers
+
 not IE 11
-not Opera Mini all
 not dead
+not op_mini all
+not kaios 2.5
+
+# Alternative modern approach (uncomment to use instead of the above)
+
+# defaults and supports es6-module
+
+# or last 2 years and > 0.5%

@@ -35,3 +35,10 @@ export interface HSBCCsvHeader {
  * Represents the header structure for Xero CSV
  */
 export type XeroCsvHeader = ['Date', 'Amount', 'Payee', 'Description'];
+
+/**
+ * The parser will return this type of object if the option "raw" is set to true
+ * "raw" is the line from the input being processed
+ * "record" is the parsed record
+ */
+export type rawRecord = { raw: string; record: string[] };

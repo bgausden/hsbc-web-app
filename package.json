@@ -17,6 +17,7 @@
     "dev": "vite",
     "start": "vite",
     "build": "vite build",
+    "build:azure": "vite build --outDir dist",
     "preview": "vite preview",
     "lint": "eslint src --ext .ts,.js",
     "lint:fix": "eslint src --ext .ts,.js --fix",

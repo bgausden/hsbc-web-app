@@ -12,9 +12,9 @@ Post Date,Transaction Date,Description,Foreign Amount,Amount(HKD)
 
     const expected = [
       ['Date', 'Amount', 'Payee', 'Description'],
-      ['2023-04-01', '-100.00', '', 'SUPERMARKET ABC '],
-      ['2023-04-02', '-250.50', '', 'RESTAURANT XYZ '],
-      ['2023-04-03', '1000.00', '', 'PAYMENT - THANK YOU '],
+      ['2023-04-01', '-100.00', '', 'SUPERMARKET ABC'],
+      ['2023-04-02', '-250.50', '', 'RESTAURANT XYZ'],
+      ['2023-04-03', '1000.00', '', 'PAYMENT - THANK YOU'],
     ];
 
     const result = csvParse(input);
@@ -38,7 +38,7 @@ Post Date,Transaction Date,Description,Foreign Amount,Amount(HKD)
 2023-04-01,2023-03-31,SALES: DEPARTMENT STORE,,300.00`;
 
     const result = csvParse(input);
-    expect(result[1][3]).toBe('DEPARTMENT STORE '); // "SALES: " should be removed
+    expect(result[1][3]).toBe('DEPARTMENT STORE'); // "SALES: " should be removed
   });
 
   // Test with inconsistent columns (comma in description)
@@ -62,7 +62,7 @@ Post Date,Transaction Date,Description,Foreign Amount,Amount(HKD)
   // Test with rows having only data in the first column
   it('should skip rows with empty transaction date', () => {
     const input = `World Business MasterCard xxxx-xxxx-xxxx-1234
-Post Date,Transaction Date,Description,Foreign Amount,Amount(HKD)
+Post Date,Transaction Date,Description,Foreign Currency Amount,Amount(HKD)
 2023-04-01,,,, 
 2023-04-02,2023-04-01,RESTAURANT XYZ,,250.50`;
 
@@ -73,11 +73,11 @@ Post Date,Transaction Date,Description,Foreign Amount,Amount(HKD)
   // Test with foreign currency amounts
   it('should include foreign currency amount in description', () => {
     const input = `World Business MasterCard xxxx-xxxx-xxxx-1234
-Post Date,Transaction Date,Description,Foreign Amount,Amount(HKD)
-2023-04-01,2023-03-31,INTL PURCHASE,USD 12.99,100.00`;
+Post Date,Transaction Date,Description,Foreign Currency Amount,Amount(HKD)
+2023-04-01,2023-03-31,INTL PURCHASE US,12.99,100.00`;
 
     const result = csvParse(input);
-    expect(result[1][3]).toBe('INTL PURCHASE USD 12.99');
+    expect(result[1][3]).toBe('INTL PURCHASE US 12.99');
   });
 
   // Test with multi-line data

@@ -1,21 +1,30 @@
-import { parse, CastingContext } from "csv-parse/browser/esm/sync";
-import { assertNotNull } from "./asserts.js";
+import { parse, CastingContext } from 'csv-parse/browser/esm/sync';
+import { assertNotNull } from './asserts.js';
+import assert from 'node:assert';
 
 const PAYMENT = /PAYMENT - THANK YOU.*$/;
 const RETURN = /RETURN:.*$/;
-const SALES = "SALES: ";
-const TRANSACTION_DATE_INDEX = 1; // zero indexedconst SALES = "SALES: "
-const DESCRIPTION_INDEX = 2; // column index for Description
-const AMOUNT_INDEX = 4; // column index for Amount(HKD)
+const SALES = 'SALES: ';
+const XERO_TRANSACTION_DATE_INDEX = 1; // zero indexedconst SALES = "SALES: "
+const XERO_DESCRIPTION_INDEX = 2; // column index for Description
+const XERO_AMOUNT_INDEX = 4; // column index for Amount(HKD)
 
+
+/**
+ * Cleans up a string value by:
+ * 1. Replacing multiple whitespace characters with a single space
+ * 2. Removing any occurrences of the SALES pattern
+ * 3. Trimming whitespace from the beginning and end of the string
+ * 
+ * @function cast
+ * @param value - The string value to be cast
+ * @returns The processed string after whitespace normalization, SALES pattern removal, and trimming
+ */
 const cast = (value: string) => {
-  return value.replace(/\s+/g, " ").replace(SALES, "").trim();
+  return value.replace(/\s+/g, ' ').replace(SALES, '').trim();
 };
 
-const onRecord = (
-  { raw, record }: { raw: string; record: string[] },
-  context: CastingContext,
-) => {
+const onRecord = ({ raw, record }: { raw: string; record: string[] }, context: CastingContext) => {
   // Validate record exists
   if (!Array.isArray(record)) {
     return null;
@@ -25,10 +34,7 @@ const onRecord = (
     // empty record, return null
     return null;
   }
-  if (
-    context.error &&
-    context.error.code === "CSV_RECORD_INCONSISTENT_COLUMNS"
-  ) {
+  if (context.error && context.error.code === 'CSV_RECORD_INCONSISTENT_COLUMNS') {
     // find the 3rd comma in the line and excise it as it's probably incorrectly part of the payee's name (and shouldn't be but HSBC are crap so...)
     let stringRaw = raw as string;
     let counter = 3; // zero-based index
@@ -36,14 +42,12 @@ const onRecord = (
 
     if (counter > 0) {
       while (counter--) {
-        // Get the index of the next occurence
-        nThIndex = stringRaw.indexOf(",", nThIndex + ",".length);
+        // Get the index of the next occurence of a comma
+        nThIndex = stringRaw.indexOf(',', nThIndex + ','.length);
       }
     }
 
-    stringRaw =
-      stringRaw.substring(0, nThIndex) +
-      stringRaw.substring(nThIndex + ",".length);
+    stringRaw = stringRaw.substring(0, nThIndex) + stringRaw.substring(nThIndex + ','.length);
     // call CSV.parse() again on the newly constructed line. This time should return the correct number of fields.
     const result = parse(stringRaw, {
       raw: true,
@@ -60,36 +64,34 @@ const onRecord = (
   setSign(record);
 
   // delete rows where there is only data in the 0th column (garbage)
-  if (record[TRANSACTION_DATE_INDEX]?.trim() === "") return null;
+  if (record[XERO_TRANSACTION_DATE_INDEX]?.trim() === '') return null;
 
   // return Post Date, Txn Amount, null, Description + Foreign CCY Amt
-  return [record[0], record[4], "", `${record[2]} ${record[3]}`];
+  return [record[0], record[4], '', `${record[2]} ${record[3]}`];
 };
 
 function setSign(record: string[]) {
   assertNotNull(record);
-  if (record.length <= AMOUNT_INDEX) {
+  if (record.length <= XERO_AMOUNT_INDEX) {
     return; // Not enough fields to process
   }
 
   if (
-    record[DESCRIPTION_INDEX]?.match(PAYMENT) ||
-    record[DESCRIPTION_INDEX]?.match(RETURN)
+    record[XERO_DESCRIPTION_INDEX]?.match(PAYMENT) ||
+    record[XERO_DESCRIPTION_INDEX]?.match(RETURN)
   ) {
     // do nothing. The amount is already positive
     return;
   }
 
   // change the value to a negative value
-  record[AMOUNT_INDEX] = `-${record[AMOUNT_INDEX]}`;
+  record[XERO_AMOUNT_INDEX] = `-${record[XERO_AMOUNT_INDEX]}`;
 }
 
 export function csvParse(fileContents: string): string[][] {
   // Validate input
-  assertNotNull(fileContents);
-  if (fileContents.trim() === "") {
-    throw new Error("CSV content cannot be empty");
-  }
+  //assertNotNull(fileContents);
+  assert(fileContents.trim() !== '', 'CSV content cannot be empty');
 
   // get the raw data, skipping the document title e.g. "World Business MasterCard xxxx-xxxx-xxxx-1234"
   const raw = fileContents;
@@ -106,11 +108,11 @@ export function csvParse(fileContents: string): string[][] {
   // Validate parsed data
   assertNotNull(csvData);
   if (!Array.isArray(csvData) || csvData.length === 0) {
-    throw new Error("Failed to parse CSV data properly");
+    throw new Error('Failed to parse CSV data properly');
   }
 
   // replace the HSBC CSV header with the Xero header
-  csvData[0] = ["Date", "Amount", "Payee", "Description"];
+  csvData[0] = ['Date', 'Amount', 'Payee', 'Description'];
 
   return csvData;
 }

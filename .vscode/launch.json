@@ -11,33 +11,79 @@
             "file": "d:\\git\\hsbc-web-app\\src\\index.html"
         },
         {
-            "type": "msedge",
-            "request": "launch",
-            "name": "webpack",
-            "url": "http://127.0.0.1:8080/index.html",
-            "webRoot": "${workspaceFolder}",
-            "sourceMaps": true,
-            "trace": true,
-            "sourceMapPathOverrides": {
-                "webpack://hsbc-web-app/./*": "${workspaceFolder}/*",
-            }
-        },
-        {
             "type": "node",
             "request": "launch",
             "name": "Mocha Tests",
             "program": "${workspaceFolder}/node_modules/mocha/bin/mocha.js",
-            "args": [
-                // moved to .mocharc.json
-                //"-n experimental-specifier-resolution=node,loader=ts-node/esm,no-warnings",
-                //"--extension ts",
-                //"--inspect-brk",
-            ],
+            "args": [],
             "console": "integratedTerminal",
-            //"internalConsoleOptions": "neverOpen",
             "skipFiles": [
                 "<node_internals>/**",
-                "**/node_modules/**",
+                "**/node_modules/**"
+            ]
+        },
+        {
+            "type": "msedge",
+            "name": "Launch Microsoft Edge",
+            "request": "launch",
+            "runtimeArgs": [
+                "--remote-debugging-port=9222"
+            ],
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/src",
+            "sourceMapPathOverrides": {
+                "/__vite-root/*": "${webRoot}/*",
+                "/*": "${webRoot}/*"
+            },
+            "sourceMaps": true,
+            "presentation": {
+                "hidden": true
+            }
+        },
+        {
+            "type": "msedge",
+            "name": "Launch Microsoft Edge in headless mode",
+            "request": "launch",
+            "runtimeArgs": [
+                "--headless",
+                "--remote-debugging-port=9222"
+            ],
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/src",
+            "sourceMapPathOverrides": {
+                "/__vite-root/*": "${webRoot}/*",
+                "/*": "${webRoot}/*"
+            },
+            "sourceMaps": true,
+            "presentation": {
+                "hidden": true
+            }
+        },
+        {
+            "type": "vscode-edge-devtools.debug",
+            "name": "Open Edge DevTools",
+            "request": "attach",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/src",
+            "sourceMaps": true,
+            "presentation": {
+                "hidden": true
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Launch Edge Headless and attach DevTools",
+            "configurations": [
+                "Launch Microsoft Edge in headless mode",
+                "Open Edge DevTools"
+            ]
+        },
+        {
+            "name": "Launch Edge and attach DevTools",
+            "configurations": [
+                "Launch Microsoft Edge",
+                "Open Edge DevTools"
             ]
         }
     ]

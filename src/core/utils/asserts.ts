@@ -1,3 +1,6 @@
+import { CsvError } from 'csv-parse/browser/esm';
+import { HSBC_DESCRIPTION_INDEX } from '../../features/csv-processing/services/csv-helpers.js';
+
 /**
  * Asserts that the element is an HTMLFormElement
  *
@@ -46,13 +49,13 @@ export function isFile(arg: unknown): arg is File {
 
 /**
  * Asserts that the given argument is an HTMLInputElement.
- * 
+ *
  * This function is a type guard that narrows the type of `arg` to HTMLInputElement
  * when it passes the check. If the argument is not an HTMLInputElement, it throws an error.
- * 
+ *
  * @param arg - The value to check
  * @throws {Error} Throws an error if the argument is not an HTMLInputElement
- * 
+ *
  * @example
  * ```ts
  * const element = document.getElementById('my-input');
@@ -65,4 +68,41 @@ export function isHTMLInputElement(arg: unknown): asserts arg is HTMLInputElemen
   if (!(arg instanceof HTMLInputElement)) {
     throw new Error('Element is not an HTMLInputElement!');
   }
+}
+
+export function isValidRecord(record: unknown): asserts record is string[] {
+  if (!Array.isArray(record)) {
+    throw new Error('Record is not an array!');
+  }
+  if (record.length !== 5) {
+    throw new Error('Record does not have exactly 5 fields!');
+  }
+  if (record[HSBC_DESCRIPTION_INDEX] === '' || record[HSBC_DESCRIPTION_INDEX] === undefined) {
+    const e = new CsvError(
+      'CSV_INVALID_ARGUMENT',
+      'Record does not have a valid Description field!'
+    );
+    //(e as any).code = "CSV_NO_DESCRIPTION";
+    throw e;
+  }
+}
+
+export function isCsvError(error: unknown): asserts error is CsvError {
+  if (!(error instanceof Error)) {
+    throw new Error('Provided error is not an instance of Error!');
+  }
+  if (!('code' in error)) {
+    throw new Error('Provided error is not a CsvError!');
+  }
+}
+
+export function isMissingDescription(record: string[]): boolean {
+  if (
+    !Array.isArray(record) ||
+    record[HSBC_DESCRIPTION_INDEX] === undefined ||
+    record[HSBC_DESCRIPTION_INDEX] === ''
+  ) {
+    return false; // Not a valid record or no description field
+  }
+  return true; // Valid record with description field
 }

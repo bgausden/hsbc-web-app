@@ -2,3 +2,7 @@
 node_modules
 dist
 coverage
+
+# Azure Static Web Apps
+.azure/
+staticwebapp.database.config.json
