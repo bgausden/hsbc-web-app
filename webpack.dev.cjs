@@ -1,9 +1,19 @@
 module.exports = ((env, args) => {
     const config = {
-        mode: 'development',
         devtool: 'inline-source-map',
         devServer: {
             static: './dist',
+            watchFiles: {
+                paths: ['src/**/*.*'],
+                options: {
+                    usePolling: true,
+                },
+            },
+            client: {
+                overlay: {
+                    warnings: false,
+                }
+            },
         },
     }
     return config
