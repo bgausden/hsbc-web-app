@@ -94,3 +94,73 @@
 - Improved description field processing with better whitespace normalization
 - Enhanced foreign currency amount handling in output
 - Better error recovery with parser resume on recoverable errors
+
+---
+
+## Date: 18 December 2025 (Evening Update)
+
+### Security Vulnerabilities Fixed
+
+**Issue**: `npm audit` reported 3 security vulnerabilities:
+- **glob** (high severity): Command injection vulnerability
+- **vite** (moderate severity): Multiple file serving and path bypass issues
+- **brace-expansion** (low severity): Regular Expression DoS vulnerability
+
+**Resolution**:
+- Ran `npm audit fix` to automatically update vulnerable dependencies
+- Updated Vite from v6.3.5 to v6.4.1
+- All vulnerabilities resolved with 0 remaining issues
+- Build and dev server confirmed working after updates
+
+### CSV Parser Async/Sync Bug Fixed
+
+**Critical Issue Discovered**: The event-driven async parser had a **race condition**:
+- Event handlers (`readable`, `error`, `end`) executed asynchronously
+- Function returned synchronously before events completed
+- Result: Always returned empty array (just header) before any CSV rows were processed
+- Error recovery wasn't working at all
+
+**Root Cause**:
+```typescript
+// Events registered but not awaited
+parser.on('readable', () => { /* process data */ });
+parser.on('error', () => { /* handle errors */ });
+parser.on('end', () => { /* cleanup */ });
+
+parser.write(rawData);
+parser.end();
+
+// Function returned IMMEDIATELY before events fired!
+return sanitizeCsvData(csvData);
+```
+
+**Solution**: Replaced async event-driven parser with **synchronous line-by-line parsing**:
+
+1. **Removed async event handlers** - replaced with synchronous for loop
+2. **Direct try/catch error handling** - catches and recovers from parse errors immediately
+3. **Fixed header skipping** - now correctly skips both card number line AND column header line
+4. **Working error recovery** - malformed rows are fixed with `handleCommaInDescription()` and processing continues
+
+**Changes Made** in [csv-parser.ts](src/features/csv-processing/services/csv-parser.ts):
+- Removed async `parse()` import, using only `syncParse()`
+- Removed event handlers (`on('readable')`, `on('error')`, `on('end')`)
+- Implemented synchronous line-by-line parsing with immediate error handling
+- Skip both header lines: `secondLine = raw.indexOf('\n', firstLine + 1)`
+- Try/catch with `isCsvError()` type guard for proper error recovery
+
+**Testing**:
+- ✅ All CSV tests pass (11/11 in csv-functions.spec.ts)
+- ✅ Build successful with `npm run build`
+- ✅ Error recovery confirmed working - malformed rows handled correctly
+- ✅ No data loss - all valid rows parsed successfully
+
+**Impact**:
+- ✅ Parser actually works now (was completely broken before)
+- ✅ Error recovery is functional - handles commas in descriptions
+- ✅ Synchronous execution ensures all data is processed before return
+- ✅ Better performance - no async overhead for this use case
+- ✅ More predictable behavior - no race conditions
+
+**Files Modified**:
+- [src/features/csv-processing/services/csv-parser.ts](src/features/csv-processing/services/csv-parser.ts) - Complete parser rewrite
+- [package-lock.json](package-lock.json) - Dependency updates from security fixes

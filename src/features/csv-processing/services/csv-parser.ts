@@ -58,13 +58,10 @@ Transactions included in previous statement,,,,
  * Main CSV parsing functionality for HSBC to Xero CSV conversion
  */
 
-//import { parse } from 'csv-parse/browser/esm/sync';
-import { parse, CsvError } from 'csv-parse/browser/esm';
-import { parse as syncParse } from 'csv-parse/browser/esm/sync';
+import { parse as syncParse, CsvError } from 'csv-parse/browser/esm/sync';
 import {
   assertNotNull,
   isCsvError,
-  isMissingDescription,
   isValidRecord,
 } from '../../../core/utils/asserts.js';
 import { cast, setSign, handleCommaInDescription, createOutputRow } from './csv-helpers.js';
@@ -84,145 +81,76 @@ export function csvParse(fileContents: string): string[][] {
     throw new Error('CSV content cannot be empty');
   }
 
-  // get the raw data, skipping the document title e.g. "World Business MasterCard xxxx-xxxx-xxxx-1234"
+  // get the raw data, skipping the document title
   const raw = fileContents;
-  /**
-   * Sample CSV data from HSBC
-   World Business MasterCard 5592-4033-3119-1519,,,,
-Post Date,Transaction Date,Description,Foreign Currency Amount,Amount(HKD)
-Transactions to be included in the next statement,,,,
-17 Apr 2025	,16 Apr 2025	,SALES:   APPLE.COM/BILL            85221120099  IE                                        	, 	,178.00
-22 Apr 2025	,21 Apr 2025	,SALES:   MINDBODY, INC.            SAN LUIS OBISUS                                        	, 299.00	,2366.83
-22 Apr 2025	,21 Apr 2025	,SALES:   CLOUDFLARE                SAN FRANCISCOUS                                        	, 30.00	,237.47
-22 Apr 2025	,19 Apr 2025	,SALES:   APPLE.COM/BILL            CORK         IE                                        	, 	,238.00
-22 Apr 2025	,17 Apr 2025	,RETURN:  AlipayHK*Taobao.com       Hong Kong    HK                                        	, 	,360.48
-22 Apr 2025	,20 Apr 2025	,SALES:   AlipayHK*Taobao.com       Hong Kong    HK                                        	, 	,3646.82
-*/
+  const firstLine = raw.indexOf('\n');
+  const secondLine = raw.indexOf('\n', firstLine + 1);
+  const rawData = raw.slice(secondLine + 1); // skip first two lines (card number + header)
 
-  const rawData = raw.slice(raw.indexOf(`\n`) + 1); // drop the first line (contains the card number)
+  // Use synchronous line-by-line parsing with error recovery
+  const csvData: string[][] = [];
+  const lines = rawData.split('\n');
 
-  // parse the raw data into a 2d array of strings
-  /* let csvData = parse(rawData, {
-    //relax_column_count: true,
-    columns: true,
-    skip_empty_lines: true,
-    trim: true,
-    raw: true,
-    cast: cast,
-    onRecord: onRecord,
-  });
- */
+  for (const line of lines) {
+    if (!line.trim()) continue;
 
-  let csvData: string[][] = [];
-  let record: { raw: string; record: string[] };
-  const options = {
-    columns: false,
-    skip_empty_lines: true,
-    trim: true,
-    raw: true,
-    from: 2,
-    cast: cast,
-    relaxed_column_count: true,
-  };
-  let parser = parse(options);
-
-  parser.on('readable', () => {
-    while ((record = parser.read()) !== null) {
-      // Process each record
-      const sourceRow = record.record;
-      try {
-        isValidRecord(sourceRow);
-        setSign(sourceRow);
-        csvData.push(createOutputRow(sourceRow));
-      } catch (error) {
-        try {
-          isCsvError(error);
-          // Log the error but continue processing other rows
-          console.warn('Skipping invalid row:', error.code, error.message);
-          // Don't break out of the loop - continue with the next record
-          continue;
-        } catch (e) {
-          if (isMissingDescription(sourceRow)) {
-            console.warn('Skipping row with missing description:', sourceRow);
-          } else {
-            console.error('Unexpected error processing row:', sourceRow, (error as Error).message);
-            throw error; // Unexpected/unknown error, rethrow it
-          }
-        }
-      }
-    }
-  });
-
-  parser.on('error', (err: CsvError) => {
-    console.info('Handling parsing error:', err.code);
-    if (
-      err.code === 'CSV_RECORD_INCONSISTENT_COLUMNS' ||
-      err.code === 'CSV_RECORD_INCONSISTENT_FIELDS_LENGTH'
-    ) {
-      // Make sure we have raw data to work with
-      if (!err.raw) {
-        console.warn('Error without raw data, skipping fix:', err.code);
-        parser.resume(); // Try to continue anyway
-        return;
-      }
-
-      const newRaw = handleCommaInDescription(err.raw);
-      const [row, _] = syncParse(newRaw, {
+    try {
+      // Try to parse the line
+      const [record] = syncParse(line, {
         skip_empty_lines: true,
         cast: cast,
         columns: false,
         trim: true,
       });
 
-      try {
-        isValidRecord(row);
-      } catch (error) {
-        console.error('Could not handle parsing error:', (error as Error).message);
-        parser.resume(); // Still try to continue
-        return;
+      // Validate and process the record
+      if (record && Array.isArray(record)) {
+        isValidRecord(record);
+        setSign(record);
+        csvData.push(createOutputRow(record));
       }
+    } catch (error) {
+      // Handle parsing errors with recovery
+      if (isCsvError(error)) {
+        const csvError = error as CsvError;
+        
+        if (
+          csvError.code === 'CSV_RECORD_INCONSISTENT_COLUMNS' ||
+          csvError.code === 'CSV_RECORD_INCONSISTENT_FIELDS_LENGTH' ||
+          csvError.code === 'CSV_INVALID_ARGUMENT'
+        ) {
+          // Try to fix malformed row (comma in description)
+          try {
+            const fixedLine = handleCommaInDescription(line);
+            const [fixedRecord] = syncParse(fixedLine, {
+              skip_empty_lines: true,
+              cast: cast,
+              columns: false,
+              trim: true,
+            });
 
-      setSign(row);
-      csvData.push(createOutputRow(row));
-      parser.resume();
-    } else {
-      // For other types of errors, log and try to continue
-      console.warn('Unhandled CSV parse error:', err.code, err.message);
-      parser.resume();
+            if (fixedRecord && Array.isArray(fixedRecord)) {
+              isValidRecord(fixedRecord);
+              setSign(fixedRecord);
+              csvData.push(createOutputRow(fixedRecord));
+              console.log('Fixed malformed row:', line.substring(0, 50) + '...');
+            }
+          } catch (fixError) {
+            console.warn('Could not fix malformed row, skipping:', line.substring(0, 50));
+          }
+        } else {
+          console.warn('Skipping row with parse error:', csvError.code);
+        }
+      } else {
+        console.warn('Skipping invalid row:', (error as Error).message);
+      }
     }
-  });
-
-  parser.on('end', () => {
-    // Handle end of parsing
-    console.log('CSV parsing completed successfully');
-  });
-
-  //parser.write(rawData);
-  // Split raw data into lines and parse line by line
-  /* const lines = rawData.split('\n');
-  for (const line of lines) {
-    if (line.trim()) {
-      parser.write(line + '\n');
-    }
-  } */
-  parser.write(rawData);
-  parser.end();
-
-  // Handle any errors that occurred during parsing
-  if (parser.errored) {
-    console.error('Error parsing CSV: parser destroyed');
-    throw new Error(`CSV parsing error: parser destroyed`);
   }
 
   // Validate parsed data
   assertNotNull(csvData);
 
-  // Even if no rows could be parsed, we should return at least the header
-  // This ensures the test for invalid data still passes
-  if (!Array.isArray(csvData)) {
-    csvData = [];
-  }
-  // pre-pend the Xero header - note the HSBC header was previously stripped
+  // pre-pend the Xero header
   const rowCount = csvData.unshift(['Date', 'Amount', 'Payee', 'Description']);
   console.log(`Row count in parsed output: ${rowCount}`);
 
