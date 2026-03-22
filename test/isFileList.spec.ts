@@ -29,8 +29,7 @@ class MockFileList {
 
 
 describe('test isFileList', function () {
-    // @ts-ignore
-    global.FileList = MockFileList;
+    (globalThis as Record<string, unknown>).FileList = MockFileList;
     let fileList = new MockFileList(Array<File>(new File([''], 'test')));
     it('should not throw for FileList', function (done) {
         assert.doesNotThrow(() => isFileList(fileList))
@@ -44,6 +43,6 @@ describe('test isFileList', function () {
     })
 
     after(() => {
-        Reflect.deleteProperty(global, 'FileList')
+        Reflect.deleteProperty(globalThis, 'FileList')
     })
 })
