@@ -1,0 +1,10 @@
+// Use CSS media queries for automatic dark/light mode (no JS needed)
+// Bootstrap will use @media (prefers-color-scheme: dark) instead of [data-bs-theme="dark"]
+$color-mode-type: media;
+
+// HSBC-inspired muted crimson as the primary brand accent
+$primary: #c41230;
+
+// Warm-tinted body colours — avoids the cold blue-gray of Bootstrap defaults
+$body-bg: #fafaf9;
+$body-color: #1c1917;

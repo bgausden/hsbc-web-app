@@ -67,7 +67,7 @@ export const handleSubmit =
             const rowCount = csvData.length - 1;
             const previewCount = Math.min(rowCount, 19);
             const summary = document.createElement('p');
-            summary.className = 'text-muted';
+            summary.className = 'text-body-secondary mb-3';
             summary.textContent = rowCount === 0
                 ? 'No transactions found in the file.'
                 : `Processed ${rowCount} transaction${rowCount !== 1 ? 's' : ''}. Showing first ${previewCount} row${previewCount !== 1 ? 's' : ''}.`;
@@ -75,6 +75,7 @@ export const handleSubmit =
 
             // Sample data section
             const sampleHeading = document.createElement('h2');
+            sampleHeading.className = 'mb-3';
             sampleHeading.textContent = 'Sample data';
             container.appendChild(sampleHeading);
             container.appendChild(createSampleTable(csvData));
@@ -87,7 +88,7 @@ export const handleSubmit =
             const downloadLink = document.createElement('a');
             downloadLink.href = url;
             downloadLink.download = 'processed.csv';
-            downloadLink.className = 'btn btn-primary mt-2';
+            downloadLink.className = 'btn btn-primary mt-3';
             downloadLink.textContent = 'Download File';
             downloadLink.addEventListener('click', () => {
                 setTimeout(() => URL.revokeObjectURL(url), 100);
