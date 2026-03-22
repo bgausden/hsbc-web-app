@@ -44,5 +44,14 @@ describe('csvParse', function () {
       const result = csvParse(csv);
       assert.equal(result[1][1], '1000.00');
     });
+
+    it('handles HSBC payment rows with trailing CR column', function () {
+      const csv = makeCSV('15/03/2025,15/03/2025,PAYMENT - THANK YOU,,21047.34,CR');
+      const result = csvParse(csv);
+      assert.equal(result[1][0], '15/03/2025');
+      assert.equal(result[1][1], '21047.34');
+      assert.equal(result[1][2], '');
+      assert.include(result[1][3], 'PAYMENT - THANK YOU');
+    });
   });
 });

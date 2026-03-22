@@ -25,11 +25,12 @@ const onRecord = (
     // empty record, return null
     return null;
   }
-  // HSBC sometimes emits unquoted commas in the description field.
-  // With relax_column_count:true the parser silently accepts extra columns.
-  // When that happens, reconstruct the 5 logical columns by merging all
-  // middle fields (everything between the two date columns and the two
-  // amount columns) back into a single description.
+  // HSBC appends ",CR" after the amount on credit rows (payments/returns),
+  // producing a 6th column. Strip it so the amount lands correctly.
+  if (record[record.length - 1]?.toUpperCase() === "CR") {
+    record.pop();
+  }
+
   const EXPECTED_COLUMN_COUNT = 5;
   if (record.length > EXPECTED_COLUMN_COUNT) {
     record = [
