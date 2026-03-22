@@ -1,3 +1,8 @@
-@import "custom";
+@use "custom" as *;
 // load source SCSS from bootstrap module
-@import "bootstrap/scss/bootstrap.scss";
+@use "bootstrap/scss/bootstrap.scss" with (
+  $color-mode-type: $color-mode-type,
+  $primary: $primary,
+  $body-bg: $body-bg,
+  $body-color: $body-color,
+);

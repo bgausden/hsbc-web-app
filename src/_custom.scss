@@ -1,3 +1,5 @@
+@use "bootstrap/scss/functions" as *;
+
 // Use CSS media queries for automatic dark/light mode (no JS needed)
 // Bootstrap will use @media (prefers-color-scheme: dark) instead of [data-bs-theme="dark"]
 $color-mode-type: media;

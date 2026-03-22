@@ -1,6 +1,6 @@
 {
   "name": "hsbc-web-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple one-page app to convert downloaded HSBC-format CSV credit card info to Xero format CSV",
   "type": "module",
   "main": "./src/index.ts",
