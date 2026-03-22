@@ -9,7 +9,7 @@ export function createSampleTable(csvData: string[][]): HTMLElement {
     // No transaction rows — return an empty state message
     if (csvData.length === 1) {
         const empty = document.createElement('p');
-        empty.className = 'text-muted fst-italic';
+        empty.className = 'text-body-secondary fst-italic';
         empty.textContent = 'No transaction rows found.';
         return empty;
     }
@@ -17,7 +17,7 @@ export function createSampleTable(csvData: string[][]): HTMLElement {
     const table = document.createElement("table");
     assertNotNull(table);
     table.id = "sample-data";
-    table.className = "table table-striped table-bordered mb-3";
+    table.className = "table table-striped table-bordered table-hover mb-3";
 
     // Create proper table structure
     const thead = document.createElement("thead");

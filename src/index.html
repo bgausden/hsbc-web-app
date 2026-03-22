@@ -3,27 +3,25 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>HSBC Xero Processor</title>
+  <title>HSBC → Xero CSV Converter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- load source image -->
+  <meta name="description" content="Convert HSBC credit card CSV statements to Xero-compatible format.">
   <link href="./favicon.png" rel="icon" />
-  <!-- load source style -->
   <link href="./index.scss" rel="stylesheet" />
-  <!-- load source script -->
   <script src="./index.ts" defer="defer"></script>
 </head>
 
 <body>
-  <div class="container-fluid" id="top-container">
+  <div class="container py-5 px-4" id="top-container">
     <main role="main">
-      <h1>HSBC CC Statement Processor</h1>
-      <form id="fileSelect" class="bg-light mb-3">
+      <h1 class="mb-4">HSBC CC Statement Processor</h1>
+      <form id="fileSelect" class="bg-body-secondary p-4 rounded-3 mb-4">
         <div class="mb-3">
-          <label for="formFile" class="form-label h5">Select HSBC CC Statement</label>
+          <label for="formFile" class="form-label fw-semibold">Select HSBC CC Statement</label>
           <input class="form-control" type="file" id="formFile" accept=".csv,text/csv">
         </div>
-        <div class="mb-3">
-          <input class="btn btn-success" type="submit" value="Process File">
+        <div class="mb-0">
+          <input class="btn btn-primary" type="submit" value="Process File">
         </div>
       </form>
       <div id="output-region" aria-live="polite"></div>
