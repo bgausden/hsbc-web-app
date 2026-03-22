@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Webpack Dev Server (start)",
+      "runtimeExecutable": "/Users/barryg/.nvm/versions/node/v22.9.0/bin/node",
+      "runtimeArgs": ["/Users/barryg/Git/hsbc-web-app/node_modules/.bin/webpack", "serve", "--mode", "development"],
+      "port": 8080
+    },
+    {
+      "name": "Webpack Dev Server (develop)",
+      "runtimeExecutable": "/Users/barryg/.nvm/versions/node/v22.9.0/bin/node",
+      "runtimeArgs": ["/Users/barryg/Git/hsbc-web-app/node_modules/webpack-dev-server/bin/webpack-dev-server.js", "--mode", "development"],
+      "port": 8080
+    }
+  ]
+}
