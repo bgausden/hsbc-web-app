@@ -1,7 +1,7 @@
 
-export const handleFileChange = (event: Event) => {
-    const outputDiv = document.getElementById('output-div');
-    if (outputDiv) {
-        outputDiv.remove();
+export const handleFileChange = (_event: Event) => {
+    const outputRegion = document.getElementById('output-region');
+    if (outputRegion) {
+        outputRegion.innerHTML = '';
     }
 }

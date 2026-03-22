@@ -1,77 +1,108 @@
 import { csvParse } from "./csv-functions.js";
-import { isHTMLInputElement, isFileList, isFile, assertNotNull } from "./asserts.js";
+import { isHTMLInputElement, isFileList, isFile } from "./asserts.js";
 import { createSampleTable } from "./createSampleTable.js";
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+function showError(container: Element, message: string): void {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-danger';
+    alert.setAttribute('role', 'alert');
+    alert.textContent = message;
+    container.appendChild(alert);
+}
+
+function formatFileSize(bytes: number): string {
+    return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
+}
 
 export const handleSubmit =
     async (event: SubmitEvent) => {
-
-        // Prevent the default form submission behavior
         event.preventDefault();
 
-        // Get the file input element from the HTML document
-        const fileInput = document.querySelector('input[type="file"]');
+        const outputRegion = document.getElementById('output-region');
+        if (!outputRegion) return;
 
-        isHTMLInputElement(fileInput);
+        // Clear previous output
+        outputRegion.innerHTML = '';
 
-        //Remove #output-div if it exists
-        let outputDiv = document.querySelector('#output-div');
-        if (outputDiv) {
-            outputDiv.remove();
+        // Show loading state
+        const form = event.target as HTMLFormElement;
+        const submitBtn = form.querySelector<HTMLInputElement>('[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.value = 'Processing…';
         }
 
-        // Get the uploaded file
-        const fileList = fileInput.files;
-        isFileList(fileList);
-        const file = fileList[0];
-        if (!isFile(file)) { return; }
+        try {
+            const fileInput = document.querySelector('input[type="file"]');
+            isHTMLInputElement(fileInput);
 
-        // Read the contents of the file
-        const fileContents = await file.text();
+            const fileList = fileInput.files;
+            isFileList(fileList);
+            const file = fileList[0];
 
-        // Process the file contents as needed
-        //const processedContents = fileContents.toUpperCase();
-        // const reader = new (FileReader);
+            if (!isFile(file)) {
+                showError(outputRegion, 'No file selected. Please choose a CSV file.');
+                return;
+            }
 
-        const csvData = csvParse(fileContents);
+            if (file.size > MAX_FILE_SIZE) {
+                showError(outputRegion, `File is too large (${formatFileSize(file.size)}). Maximum allowed size is 10MB.`);
+                return;
+            }
 
-        assertNotNull(csvData);
+            const fileContents = await file.text();
+            const csvData = csvParse(fileContents);
 
-        const csvString = csvData.map(row => row.join(',')).join('\n');
-        // Create a new file with the processed contents
-        const processedFile = new File([csvString], 'processed.csv', { type: 'text/csv' });
+            if (!csvData || csvData.length === 0) {
+                showError(outputRegion, 'The file could not be parsed. Please check it is a valid HSBC CSV statement.');
+                return;
+            }
 
-        const topContainer = document.querySelector('#top-container');
-        assertNotNull(topContainer);
+            // Build output container
+            const container = document.createElement('div');
 
-        topContainer.appendChild(document.createElement('div')).className = "mb-3";
+            // Row count summary (csvData includes header row)
+            const rowCount = csvData.length - 1;
+            const previewCount = Math.min(rowCount, 19);
+            const summary = document.createElement('p');
+            summary.className = 'text-muted';
+            summary.textContent = rowCount === 0
+                ? 'No transactions found in the file.'
+                : `Processed ${rowCount} transaction${rowCount !== 1 ? 's' : ''}. Showing first ${previewCount} row${previewCount !== 1 ? 's' : ''}.`;
+            container.appendChild(summary);
 
-        outputDiv = topContainer.appendChild(document.createElement('div'));
-        outputDiv.id = 'output-div';
-        outputDiv.className = 'mb-3';
+            // Sample data section
+            const sampleHeading = document.createElement('h2');
+            sampleHeading.textContent = 'Sample data';
+            container.appendChild(sampleHeading);
+            container.appendChild(createSampleTable(csvData));
 
-        outputDiv = outputDiv.appendChild(document.createElement('div'));
-        outputDiv.id = 'sample-data-div';
-        outputDiv.className = 'mb-3';
+            // Download link — uses <a download> to avoid page navigation and revokes URL after click
+            const csvString = csvData.map(row => row.join(',')).join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
 
-        // Create a heading for the sample data
-        const sampleDataHeading = document.createElement('h5');
-        sampleDataHeading.textContent = 'Sample data';
-        outputDiv.appendChild(sampleDataHeading);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = 'processed.csv';
+            downloadLink.className = 'btn btn-primary mt-2';
+            downloadLink.textContent = 'Download File';
+            downloadLink.addEventListener('click', () => {
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+            });
+            container.appendChild(downloadLink);
 
-        // Create a table to display a sample of the data
-        outputDiv.appendChild(createSampleTable(csvData));
+            outputRegion.appendChild(container);
 
-        outputDiv.appendChild(document.createElement('div')).className = "mb-3";
-
-        const downloadButton = document.createElement('button');
-        downloadButton.textContent = 'Download File';
-        downloadButton.className = 'btn btn-primary';
-        downloadButton.addEventListener('click', () => {
-            window.location.href = URL.createObjectURL(processedFile);
-        });
-        outputDiv.appendChild(downloadButton);
-
-        outputDiv.appendChild(document.createElement('br'));
-
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'An unexpected error occurred.';
+            showError(outputRegion, `Failed to process file: ${message}`);
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.value = 'Process File';
+            }
+        }
     };
-
