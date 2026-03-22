@@ -25,33 +25,20 @@ const onRecord = (
     // empty record, return null
     return null;
   }
-  if (
-    context.error &&
-    context.error.code === "CSV_RECORD_INCONSISTENT_COLUMNS"
-  ) {
-    // find the 3rd comma in the line and excise it as it's probably incorrectly part of the payee's name (and shouldn't be but HSBC are crap so...)
-    let stringRaw = raw as string;
-    let counter = 3; // zero-based index
-    let nThIndex = 0;
-
-    if (counter > 0) {
-      while (counter--) {
-        // Get the index of the next occurence
-        nThIndex = stringRaw.indexOf(",", nThIndex + ",".length);
-      }
-    }
-
-    stringRaw =
-      stringRaw.substring(0, nThIndex) +
-      stringRaw.substring(nThIndex + ",".length);
-    // call CSV.parse() again on the newly constructed line. This time should return the correct number of fields.
-    const result = parse(stringRaw, {
-      raw: true,
-      trim: true,
-      onRecord: onRecord,
-      cast: cast,
-    });
-    return result[0];
+  // HSBC sometimes emits unquoted commas in the description field.
+  // With relax_column_count:true the parser silently accepts extra columns.
+  // When that happens, reconstruct the 5 logical columns by merging all
+  // middle fields (everything between the two date columns and the two
+  // amount columns) back into a single description.
+  const EXPECTED_COLUMN_COUNT = 5;
+  if (record.length > EXPECTED_COLUMN_COUNT) {
+    record = [
+      record[0],                                          // Post Date
+      record[1],                                          // Transaction Date
+      record.slice(2, record.length - 2).join(" "),       // Description (merged)
+      record[record.length - 2],                          // Foreign CCY Amt
+      record[record.length - 1],                          // Amount(HKD)
+    ];
   }
 
   // Purchase amounts need to be negative for Xero import
