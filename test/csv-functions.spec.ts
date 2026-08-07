@@ -25,7 +25,7 @@ describe('csvParse', function () {
       const csv = makeCSV('15/03/2025,15/03/2025,MERCHANT, EXTRA,,45.00');
       const result = csvParse(csv);
       expect(result[1][1]).toBe('-45.00');
-      expect(result[1][3]).toContain('MERCHANT');
+      expect(result[1][3]).toBe('MERCHANT, EXTRA ');
     });
   });
 
@@ -34,7 +34,15 @@ describe('csvParse', function () {
       const csv = makeCSV('15/03/2025,15/03/2025,A, B, C,,45.00');
       const result = csvParse(csv);
       expect(result[1][1]).toBe('-45.00');
-      expect(result[1][3]).toContain('A');
+      expect(result[1][3]).toBe('A, B, C ');
+    });
+
+    it('preserves merchant punctuation when a foreign amount is present', function () {
+      const csv = makeCSV('03/05/2025,02/05/2025,MINDBODY, INC. SAN LUIS OBISUS,USD 299.00,2386.79');
+      const result = csvParse(csv);
+
+      expect(result[1][1]).toBe('-2386.79');
+      expect(result[1][3]).toBe('MINDBODY, INC. SAN LUIS OBISUS USD 299.00');
     });
   });
 

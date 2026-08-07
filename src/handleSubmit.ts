@@ -1,6 +1,7 @@
 import { csvParse } from "./csv-functions.js";
 import { isHTMLInputElement, isFileList, isFile } from "./asserts.js";
 import { createSampleTable } from "./createSampleTable.js";
+import { stringifyCsv } from "./stringifyCsv.js";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
@@ -81,7 +82,7 @@ export const handleSubmit =
             container.appendChild(createSampleTable(csvData));
 
             // Download link — uses <a download> to avoid page navigation and revokes URL after click
-            const csvString = csvData.map(row => row.join(',')).join('\n');
+            const csvString = stringifyCsv(csvData);
             const blob = new Blob([csvString], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
 

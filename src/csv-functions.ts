@@ -36,7 +36,7 @@ const onRecord = (
     record = [
       record[0],                                          // Post Date
       record[1],                                          // Transaction Date
-      record.slice(2, record.length - 2).join(" "),       // Description (merged)
+      record.slice(2, record.length - 2).join(", "),      // Description (merged)
       record[record.length - 2],                          // Foreign CCY Amt
       record[record.length - 1],                          // Amount(HKD)
     ];
