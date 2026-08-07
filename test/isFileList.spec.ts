@@ -1,5 +1,4 @@
-import { assert } from 'chai';
-import { describe, it, afterAll } from 'vitest';
+import { describe, it, afterAll, expect } from 'vitest';
 import { isFileList } from '../src/asserts.js';
 
 class MockFileList {
@@ -31,13 +30,11 @@ describe('test isFileList', function () {
   let fileList = new MockFileList(Array<File>(new File([''], 'test')));
 
   it('should not throw for FileList', function () {
-    assert.doesNotThrow(() => isFileList(fileList));
+    expect(() => isFileList(fileList)).not.toThrow();
   });
 
   it('should throw for {}', function () {
-    assert.throws(function () {
-      isFileList({});
-    });
+    expect(() => isFileList({})).toThrow();
   });
 
   afterAll(() => {
